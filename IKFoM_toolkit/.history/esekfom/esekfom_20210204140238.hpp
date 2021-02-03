@@ -636,10 +636,10 @@ public:
 				res_temp_SO3 = A_matrix(seg_SO3).transpose();
 				dx_new.template block<3, 1>(idx, 0) = res_temp_SO3 * dx.template block<3, 1>(idx, 0);
 				for(int i = 0; i < n; i++){
-					P_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_. template block<3, 1>(idx, i));	
+					P_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_propagated. template block<3, 1>(idx, i));	
 				}
 				for(int i = 0; i < n; i++){
-					P_. template block<1, 3>(i, idx) =(P_. template block<1, 3>(i, idx)) *  res_temp_SO3.transpose();	
+					P_. template block<1, 3>(i, idx) =(P_propagated. template block<1, 3>(i, idx)) *  res_temp_SO3.transpose();	
 				}
 			}
 		
@@ -660,10 +660,10 @@ public:
 				res_temp_S2 = Nx * Mx; 
 				dx_new.template block<2, 1>(idx, 0) = res_temp_S2 * dx.template block<2, 1>(idx, 0);
 				for(int i = 0; i < n; i++){
-					P_. template block<2, 1>(idx, i) = res_temp_S2 * (P_. template block<2, 1>(idx, i));	
+					P_. template block<2, 1>(idx, i) = res_temp_S2 * (P_propagated. template block<2, 1>(idx, i));	
 				}
 				for(int i = 0; i < n; i++){
-					P_. template block<1, 2>(i, idx) = (P_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
+					P_. template block<1, 2>(i, idx) = (P_propagated. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
 				}
 			}
 
