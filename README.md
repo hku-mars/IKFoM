@@ -7,6 +7,7 @@
 [Dongjiao He](https://github.com/Joanna-HE)
 
 **Our related video**: https://youtu.be/sz_ZlDkl6fA
+**Our related paper**: https://arxiv.org/pdf/2102.03804.pdf
 
 ## 1. Prerequisites
 
