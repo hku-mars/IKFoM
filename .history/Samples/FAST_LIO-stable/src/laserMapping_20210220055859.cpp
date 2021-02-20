@@ -482,7 +482,7 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> get_h(state &s, esekfom::dyn_cal<double
                     }
 
                     dyn_share.h_v = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Identity(laserCloudSelNum, laserCloudSelNum);
-                    dyn_share.R = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Identity(laserCloudSelNum, laserCloudSelNum) * LASER_POINT_COV;
+                    dyn_share.R = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Identity(laserCloudSelNum, laserCloudSelNum) * 0.03;
                     dyn_share.h_x = H; //= meas_vec;
                     dyn_share.z = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Zero(laserCloudSelNum, 1);
                     return meas_vec;
@@ -1063,7 +1063,7 @@ int main(int argc, char** argv)
                 {
                     t2 = omp_get_wtime();
                 #ifdef Modified
-                    state_cal.kf.update_iterated_dyn_share_modified(LASER_POINT_COV); //, NUM_MAX_ITERATIONS, limit, 100.0);
+                    state_cal.kf.update_iterated_dyn_share_modified(); //, NUM_MAX_ITERATIONS, limit, 100.0);
                 #else
                     state_cal.kf.update_iterated_dyn_share(); //NUM_MAX_ITERATIONS, limit, 100.0);   
                 #endif                    

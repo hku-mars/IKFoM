@@ -482,7 +482,7 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> get_h(state &s, esekfom::dyn_cal<double
                     }
 
                     dyn_share.h_v = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Identity(laserCloudSelNum, laserCloudSelNum);
-                    dyn_share.R = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Identity(laserCloudSelNum, laserCloudSelNum) * LASER_POINT_COV;
+                    dyn_share.R = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Identity(laserCloudSelNum, laserCloudSelNum) * 0.03;
                     dyn_share.h_x = H; //= meas_vec;
                     dyn_share.z = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>::Zero(laserCloudSelNum, 1);
                     return meas_vec;

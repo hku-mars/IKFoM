@@ -31,6 +31,7 @@
 /// *************Preconfiguration
 
 #define MAX_INI_COUNT (200)
+#define IMU_ACC_SCALE (9.81)
 
 const bool time_list(PointType &x, PointType &y) {return (x.curvature < y.curvature);};
 
@@ -236,14 +237,14 @@ void ImuProcess::UndistortPcl(const MeasureGroup &meas, ekf &state_inout, PointC
     dt = tail->header.stamp.toSec() - head->header.stamp.toSec();
 
     input in_cur;
-    in_cur.acc = acc_avr *  G_m_s2 / scale_gravity; 
+    in_cur.acc = acc_avr * 9.81; 
     in_cur.gyro = angvel_avr; 
     state_inout.Q.diagonal().segment<3>(0) = cov_gyr  * 10000; 
     state_inout.Q.diagonal().segment<3>(3) = cov_acc  * 10000; 
     state_inout.predict(dt, in_cur);
    
     state cur_state = state_inout.kf.get_x();
-    vect3 acc_g_avr= cur_state.rot*(acc_avr *  G_m_s2 / scale_gravity - cur_state.ba); 
+    vect3 acc_g_avr= cur_state.rot*(acc_avr * 9.81 - cur_state.ba); 
      for(int i = 0; i < 3; i++){
     acc_imu[i] =  acc_g_avr[i] + cur_state.grav[i]; 
     }
