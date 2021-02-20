@@ -251,7 +251,6 @@ public:
 		x_.build_vect_state();
 	}
 
-
 	//receive system-specific models and their differentions
 	//for measurement as a dynamic manifold whose dimension is changing.
 	//calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function (h_dyn_share_in).
@@ -272,6 +271,7 @@ public:
 		x_.build_SO3_state();
 		x_.build_vect_state();
 	}
+
 
 	// iterated error state EKF propogation
 	void predict(double &dt, processnoisecovariance &Q, const input &i_in){
