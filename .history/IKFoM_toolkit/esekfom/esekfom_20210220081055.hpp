@@ -63,7 +63,7 @@ using namespace Eigen;
 //for the aim to calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function.
 //applied for measurement as a manifold.
 template<typename S, typename M, int measurement_noise_dof = M::DOF>
-struct share_datastruct
+struct share_dataholder
 {
 	bool valid;
 	bool converge;
@@ -77,7 +77,7 @@ struct share_datastruct
 //for the aim to calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function.
 //applied for measurement as an Eigen matrix whose dimension is changing
 template<typename T>
-struct dyn_share_datastruct
+struct dyn_share_dataholder
 {
 	bool valid;
 	bool converge;
@@ -91,7 +91,7 @@ struct dyn_share_datastruct
 //for the aim to calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function.
 //applied for measurement as a dynamic manifold whose dimension is changing
 template<typename T>
-struct dyn_runtime_share_datastruct
+struct dyn_runtime_share_dataholder
 {
 	bool valid;
 	bool converge;
@@ -122,9 +122,9 @@ public:
 	typedef Eigen::Matrix<scalar_type, m, process_noise_dof> processMatrix2(state &, const input &);
 	typedef Eigen::Matrix<scalar_type, process_noise_dof, process_noise_dof> processnoisecovariance;
 	typedef measurement measurementModel(state &, bool &);
-	typedef measurement measurementModel_share(state &, share_datastruct<state, measurement, measurement_noise_dof> &);
+	typedef measurement measurementModel_share(state &, share_dataholder<state, measurement, measurement_noise_dof> &);
 	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn(state &, bool &);
-	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn_share(state &,  dyn_share_datastruct<scalar_type> &);
+	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn_share(state &,  dyn_share_dataholder<scalar_type> &);
 	typedef Eigen::Matrix<scalar_type ,l, n> measurementMatrix1(state &, bool&);
 	typedef Eigen::Matrix<scalar_type , Eigen::Dynamic, n> measurementMatrix1_dyn(state &, bool&);
 	typedef Eigen::Matrix<scalar_type ,l, measurement_noise_dof> measurementMatrix2(state &, bool&);
@@ -153,6 +153,27 @@ public:
 		h = h_in;
 		h_x = h_x_in;
 		h_v = h_v_in;
+
+		maximum_iter = maximum_iteration;
+		for(int i=0; i<n; i++)
+		{
+			limit[i] = limit_vector[i];
+		}
+
+		x_.build_S2_state();
+		x_.build_SO3_state();
+		x_.build_vect_state();
+	}
+
+	//receive system-specific models and their differentions
+	//for measurement as a dynamic manifold whose dimension is changing.
+	//calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function (h_dyn_share_in).
+	//for any scenarios where it is needed
+	void init(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, int maximum_iteration, scalar_type limit_vector[n])
+	{
+		f = f_in;
+		f_x = f_x_in;
+		f_w = f_w_in;
 
 		maximum_iter = maximum_iteration;
 		for(int i=0; i<n; i++)
@@ -239,27 +260,6 @@ public:
 		f_x = f_x_in;
 		f_w = f_w_in;
 		h_dyn_share = h_dyn_share_in;
-
-		maximum_iter = maximum_iteration;
-		for(int i=0; i<n; i++)
-		{
-			limit[i] = limit_vector[i];
-		}
-
-		x_.build_S2_state();
-		x_.build_SO3_state();
-		x_.build_vect_state();
-	}
-
-	//receive system-specific models and their differentions
-	//for measurement as a dynamic manifold whose dimension is changing.
-	//calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function (h_dyn_share_in).
-	//for any scenarios where it is needed
-	void init_dyn_runtime_share(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, int maximum_iteration, scalar_type limit_vector[n])
-	{
-		f = f_in;
-		f_x = f_x_in;
-		f_w = f_w_in;
 
 		maximum_iter = maximum_iteration;
 		for(int i=0; i<n; i++)
@@ -595,7 +595,7 @@ public:
 		}
 
 		int t = 0;
-		share_datastruct<state, measurement, measurement_noise_dof> _share;
+		share_dataholder<state, measurement, measurement_noise_dof> _share;
 		_share.valid = true;
 		_share.converge = true;
 		state x_propagated = x_;
@@ -999,7 +999,7 @@ public:
 	void update_iterated_dyn_share() {
 		
 		int t = 0;
-		dyn_share_datastruct<scalar_type> dyn_share;
+		dyn_share_dataholder<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		state x_propagated = x_;
@@ -1410,7 +1410,7 @@ public:
 	void update_iterated_dyn_runtime_share(measurement_runtime z, measurementModel_dyn_runtime_share h) {
 		
 		int t = 0;
-		dyn_runtime_share_datastruct<scalar_type> dyn_share;
+		dyn_runtime_share_dataholder<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		state x_propagated = x_;
@@ -1614,7 +1614,7 @@ public:
 	//iterated error state EKF update modified for one specific system.
 	void update_iterated_dyn_share_modified(double R) {
 		
-		dyn_share_datastruct<scalar_type> dyn_share;
+		dyn_share_dataholder<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		int t = 0;

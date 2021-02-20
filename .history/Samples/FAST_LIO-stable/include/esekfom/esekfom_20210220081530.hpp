@@ -122,9 +122,9 @@ public:
 	typedef Eigen::Matrix<scalar_type, m, process_noise_dof> processMatrix2(state &, const input &);
 	typedef Eigen::Matrix<scalar_type, process_noise_dof, process_noise_dof> processnoisecovariance;
 	typedef measurement measurementModel(state &, bool &);
-	typedef measurement measurementModel_share(state &, share_datastruct<state, measurement, measurement_noise_dof> &);
+	typedef measurement measurementModel_share(state &, _cal<state, measurement, measurement_noise_dof> &);
 	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn(state &, bool &);
-	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn_share(state &,  dyn_share_datastruct<scalar_type> &);
+	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn_share(state &,  dyn_cal<scalar_type> &);
 	typedef Eigen::Matrix<scalar_type ,l, n> measurementMatrix1(state &, bool&);
 	typedef Eigen::Matrix<scalar_type , Eigen::Dynamic, n> measurementMatrix1_dyn(state &, bool&);
 	typedef Eigen::Matrix<scalar_type ,l, measurement_noise_dof> measurementMatrix2(state &, bool&);
@@ -595,7 +595,7 @@ public:
 		}
 
 		int t = 0;
-		share_datastruct<state, measurement, measurement_noise_dof> _share;
+		_cal<state, measurement, measurement_noise_dof> _share;
 		_share.valid = true;
 		_share.converge = true;
 		state x_propagated = x_;
@@ -999,7 +999,7 @@ public:
 	void update_iterated_dyn_share() {
 		
 		int t = 0;
-		dyn_share_datastruct<scalar_type> dyn_share;
+		dyn_cal<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		state x_propagated = x_;
@@ -1410,7 +1410,7 @@ public:
 	void update_iterated_dyn_runtime_share(measurement_runtime z, measurementModel_dyn_runtime_share h) {
 		
 		int t = 0;
-		dyn_runtime_share_datastruct<scalar_type> dyn_share;
+		dyn_cal_runtime<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		state x_propagated = x_;
@@ -1614,7 +1614,7 @@ public:
 	//iterated error state EKF update modified for one specific system.
 	void update_iterated_dyn_share_modified(double R) {
 		
-		dyn_share_datastruct<scalar_type> dyn_share;
+		dyn_cal<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		int t = 0;

@@ -154,7 +154,7 @@ void pointBodyToWorld(PointType const * const pi, PointType * const po, state &s
 
 // Modified measurement model and its differentions
 #ifdef Modified
-Eigen::Matrix<double, Eigen::Dynamic, 1> get_h_modified(state &s, esekfom::dyn_share_datastruct<double> &dyn_share)
+Eigen::Matrix<double, Eigen::Dynamic, 1> get_h_modified(state &s, esekfom::dyn_cal<double> &dyn_share)
 {
                     PointCloudXYZI::Ptr laserCloudOri(new pcl::PointCloud<PointType>());
                     PointCloudXYZI::Ptr coeffSel(new pcl::PointCloud<PointType>());

@@ -1410,7 +1410,7 @@ public:
 	void update_iterated_dyn_runtime_share(measurement_runtime z, measurementModel_dyn_runtime_share h) {
 		
 		int t = 0;
-		dyn_runtime_share_datastruct<scalar_type> dyn_share;
+		dyn_cal_runtime<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		state x_propagated = x_;
@@ -1614,7 +1614,7 @@ public:
 	//iterated error state EKF update modified for one specific system.
 	void update_iterated_dyn_share_modified(double R) {
 		
-		dyn_share_datastruct<scalar_type> dyn_share;
+		dyn_cal<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		int t = 0;

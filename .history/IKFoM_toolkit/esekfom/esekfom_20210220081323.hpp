@@ -165,6 +165,27 @@ public:
 		x_.build_vect_state();
 	}
 
+	//receive system-specific models and their differentions
+	//for measurement as a dynamic manifold whose dimension is changing.
+	//calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function (h_dyn_share_in).
+	//for any scenarios where it is needed
+	void init(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, int maximum_iteration, scalar_type limit_vector[n])
+	{
+		f = f_in;
+		f_x = f_x_in;
+		f_w = f_w_in;
+
+		maximum_iter = maximum_iteration;
+		for(int i=0; i<n; i++)
+		{
+			limit[i] = limit_vector[i];
+		}
+
+		x_.build_S2_state();
+		x_.build_SO3_state();
+		x_.build_vect_state();
+	}
+
 	//receive system-specific models and their differentions.
 	//for measurement as an Eigen matrix whose dimention is chaing.
 	void init_dyn(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, measurementModel_dyn h_in, measurementMatrix1_dyn h_x_in, measurementMatrix2_dyn h_v_in, int maximum_iteration, scalar_type limit_vector[n])
@@ -239,27 +260,6 @@ public:
 		f_x = f_x_in;
 		f_w = f_w_in;
 		h_dyn_share = h_dyn_share_in;
-
-		maximum_iter = maximum_iteration;
-		for(int i=0; i<n; i++)
-		{
-			limit[i] = limit_vector[i];
-		}
-
-		x_.build_S2_state();
-		x_.build_SO3_state();
-		x_.build_vect_state();
-	}
-
-	//receive system-specific models and their differentions
-	//for measurement as a dynamic manifold whose dimension is changing.
-	//calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function (h_dyn_share_in).
-	//for any scenarios where it is needed
-	void init_dyn_runtime_share(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, int maximum_iteration, scalar_type limit_vector[n])
-	{
-		f = f_in;
-		f_x = f_x_in;
-		f_w = f_w_in;
 
 		maximum_iter = maximum_iteration;
 		for(int i=0; i<n; i++)
@@ -999,7 +999,7 @@ public:
 	void update_iterated_dyn_share() {
 		
 		int t = 0;
-		dyn_share_datastruct<scalar_type> dyn_share;
+		dyn_share_dataholder<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		state x_propagated = x_;
@@ -1410,7 +1410,7 @@ public:
 	void update_iterated_dyn_runtime_share(measurement_runtime z, measurementModel_dyn_runtime_share h) {
 		
 		int t = 0;
-		dyn_runtime_share_datastruct<scalar_type> dyn_share;
+		dyn_runtime_share_dataholder<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		state x_propagated = x_;
@@ -1614,7 +1614,7 @@ public:
 	//iterated error state EKF update modified for one specific system.
 	void update_iterated_dyn_share_modified(double R) {
 		
-		dyn_share_datastruct<scalar_type> dyn_share;
+		dyn_share_dataholder<scalar_type> dyn_share;
 		dyn_share.valid = true;
 		dyn_share.converge = true;
 		int t = 0;
