@@ -1420,7 +1420,7 @@ public:
 		for(int i=-1; i<maximum_iter; i++)
 		{
 			dyn_share.valid = true;
-			measurement_runtime h = h (x_,  dyn_share); 
+			measurement_runtime h_ = h(x_,  dyn_share); 
 			//measurement_runtime z = dyn_share.z;
 		#ifdef USE_sparse
 			spMt h_x = dyn_share.h_x.sparseView();
@@ -1514,8 +1514,8 @@ public:
 			#endif 
 			}
 			cov K_x = K_ * h_x;
-			Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> innovation;
-			z.boxminus(innovation, h);
+			Eigen::Matrix<scalar_type, measurement_runtime::DOF, 1> innovation;
+			z.boxminus(innovation, h_);
 			Matrix<scalar_type, n, 1> dx_ = K_ * innovation + (K_x - Matrix<scalar_type, n, n>::Identity()) * dx_new; 
 			state x_before = x_;
 			x_.boxplus(dx_);
