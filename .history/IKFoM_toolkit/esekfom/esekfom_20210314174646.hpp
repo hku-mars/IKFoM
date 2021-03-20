@@ -45,11 +45,11 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include "../mtk/types/vect.hpp"
-#include "../mtk/types/SOn.hpp"
-#include "../mtk/types/S2.hpp"
-#include "../mtk/startIdx.hpp"
-#include "../mtk/build_manifold.hpp"
+#include <mtk/types/vect.hpp>
+#include <mtk/types/SOn.hpp>
+#include <mtk/types/S2.hpp>
+#include <mtk/startIdx.hpp>
+#include <mtk/build_manifold.hpp>
 #include "util.hpp"
 
 //#define USE_sparse

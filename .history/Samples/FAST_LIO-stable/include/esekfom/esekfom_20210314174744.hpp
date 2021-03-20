@@ -45,11 +45,11 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include "../mtk/types/vect.hpp"
-#include "../mtk/types/SOn.hpp"
-#include "../mtk/types/S2.hpp"
-#include "../mtk/startIdx.hpp"
-#include "../mtk/build_manifold.hpp"
+#include <mtk/types/vect.hpp>
+#include <mtk/types/SOn.hpp>
+#include <mtk/types/S2.hpp>
+#include <mtk/startIdx.hpp>
+#include <mtk/build_manifold.hpp>
 #include "util.hpp"
 
 //#define USE_sparse
@@ -251,9 +251,8 @@ public:
 		x_.build_vect_state();
 	}
 
-
 	//receive system-specific models and their differentions
-	//for measurement as a dynamic manifold whose dimension  or type is changing.
+	//for measurement as a dynamic manifold whose dimension or type is changing.
 	//calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function (h_dyn_share_in).
 	//for any scenarios where it is needed
 	void init_dyn_runtime_share(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, int maximum_iteration, scalar_type limit_vector[n])
@@ -272,6 +271,7 @@ public:
 		x_.build_SO3_state();
 		x_.build_vect_state();
 	}
+
 
 	// iterated error state EKF propogation
 	void predict(double &dt, processnoisecovariance &Q, const input &i_in){
@@ -1306,7 +1306,7 @@ public:
 			#endif 
 			}
 			cov K_x = K_ * h_x_;
-			Eigen::Matrix<scalar_type, measurement_runtime::DOF, 1> innovation;
+			Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> innovation;
 			z.boxminus(innovation, h_);
 			Matrix<scalar_type, n, 1> dx_ = K_ * innovation + (K_x - Matrix<scalar_type, n, n>::Identity()) * dx_new; 
 			state x_before = x_;
@@ -1403,7 +1403,7 @@ public:
 		}
 	}
 
-	//iterated error state EKF update for measurement as a dynamic manifold, whose dimension or type is changing.
+	//iterated error state EKF update for measurement as a dynamic manifold, whose dimension is changing.
 	//the measurement and the measurement model are received in a dynamic manner.
 	//calculate measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function.
 	template<typename measurement_runtime, typename measurementModel_dyn_runtime_share>
@@ -1420,7 +1420,7 @@ public:
 		for(int i=-1; i<maximum_iter; i++)
 		{
 			dyn_share.valid = true;
-			measurement_runtime h_ = h(x_,  dyn_share); 
+			measurement_runtime h = h (x_,  dyn_share); 
 			//measurement_runtime z = dyn_share.z;
 		#ifdef USE_sparse
 			spMt h_x = dyn_share.h_x.sparseView();
@@ -1514,8 +1514,8 @@ public:
 			#endif 
 			}
 			cov K_x = K_ * h_x;
-			Eigen::Matrix<scalar_type, measurement_runtime::DOF, 1> innovation;
-			z.boxminus(innovation, h_);
+			Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> innovation;
+			z.boxminus(innovation, h);
 			Matrix<scalar_type, n, 1> dx_ = K_ * innovation + (K_x - Matrix<scalar_type, n, n>::Identity()) * dx_new; 
 			state x_before = x_;
 			x_.boxplus(dx_);

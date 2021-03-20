@@ -36,7 +36,7 @@
 #define __MEKFOM_UTIL_HPP__
 
 #include <Eigen/Core>
-#include <mtk/src/mtkmath.hpp>
+#include "../mtk/src/mtkmath.hpp"
 namespace esekfom {
 
 template <typename T1, typename T2>

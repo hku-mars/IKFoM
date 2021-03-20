@@ -45,11 +45,11 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include "../mtk/types/vect.hpp"
-#include "../mtk/types/SOn.hpp"
-#include "../mtk/types/S2.hpp"
-#include "../mtk/startIdx.hpp"
-#include "../mtk/build_manifold.hpp"
+#include <mtk/types/vect.hpp>
+#include <mtk/types/SOn.hpp>
+#include <mtk/types/S2.hpp>
+#include <mtk/startIdx.hpp>
+#include <mtk/build_manifold.hpp>
 #include "util.hpp"
 
 //#define USE_sparse
@@ -89,7 +89,7 @@ struct dyn_share_datastruct
 
 //used for iterated error state EKF update
 //for the aim to calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function.
-//applied for measurement as a dynamic manifold whose dimension or type is changing
+//applied for measurement as a dynamic manifold whose dimension is changing
 template<typename T>
 struct dyn_runtime_share_datastruct
 {
@@ -189,7 +189,7 @@ public:
 	}
 
 	//receive system-specific models and their differentions.
-	//for measurement as a dynamic manifold whose dimension or type is changing.
+	//for measurement as a dynamic manifold whose dimension is changing.
 	void init_dyn_runtime(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, measurementMatrix1_dyn h_x_in, measurementMatrix2_dyn h_v_in, int maximum_iteration, scalar_type limit_vector[n])
 	{
 		f = f_in;
@@ -1199,7 +1199,7 @@ public:
 		}
 	}
 
-	//iterated error state EKF update for measurement as a dynamic manifold, whose dimension or type is changing.
+	//iterated error state EKF update for measurement as a dynamic manifold, whose dimension is changing.
 	//the measurement and the measurement model are received in a dynamic manner.
 	template<typename measurement_runtime, typename measurementModel_runtime>
 	void update_iterated_dyn_runtime(measurement_runtime z, measurementnoisecovariance_dyn R, measurementModel_runtime h_runtime) {
@@ -1403,7 +1403,7 @@ public:
 		}
 	}
 
-	//iterated error state EKF update for measurement as a dynamic manifold, whose dimension or type is changing.
+	//iterated error state EKF update for measurement as a dynamic manifold, whose dimension is changing.
 	//the measurement and the measurement model are received in a dynamic manner.
 	//calculate measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function.
 	template<typename measurement_runtime, typename measurementModel_dyn_runtime_share>

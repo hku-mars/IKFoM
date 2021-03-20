@@ -45,11 +45,11 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 
-#include "../mtk/types/vect.hpp"
-#include "../mtk/types/SOn.hpp"
-#include "../mtk/types/S2.hpp"
-#include "../mtk/startIdx.hpp"
-#include "../mtk/build_manifold.hpp"
+#include <mtk/types/vect.hpp>
+#include <mtk/types/SOn.hpp>
+#include <mtk/types/S2.hpp>
+#include <mtk/startIdx.hpp>
+#include <mtk/build_manifold.hpp>
 #include "util.hpp"
 
 //#define USE_sparse
@@ -189,7 +189,7 @@ public:
 	}
 
 	//receive system-specific models and their differentions.
-	//for measurement as a dynamic manifold whose dimension or type is changing.
+	//for measurement as a dynamic manifold whose dimension is changing.
 	void init_dyn_runtime(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, measurementMatrix1_dyn h_x_in, measurementMatrix2_dyn h_v_in, int maximum_iteration, scalar_type limit_vector[n])
 	{
 		f = f_in;
