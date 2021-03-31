@@ -148,7 +148,7 @@ std::pair<scalar, scalar> cos_sinc_sqrt(const scalar &x2){
 	static scalar const taylor_2_bound = sqrt(taylor_0_bound);
 	static scalar const taylor_n_bound = sqrt(taylor_2_bound);
 	
-	assert(x2>=0 && "argument must be non-negative");
+	assert(x2>=0 && "argument must be non-negative and must not be nan/-nan");
 	
 	// FIXME check if bigger bounds are possible
 	if(x2>=taylor_n_bound) {
