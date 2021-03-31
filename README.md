@@ -49,9 +49,9 @@ MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ```
 4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>:
 ```
-Eigen::Matrix<double, state_length, 1> f(state &s, input &i) {}
-Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, input &i) {} //notice S2 has length of 3 and dimension of 2
-Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, input &i) {}
+Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {}
+Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, const input &i) {} //notice S2 has length of 3 and dimension of 2
+Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, const input &i) {}
 ```
 5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
@@ -59,11 +59,16 @@ measurement h(state &s, bool &valid) {} //the iteration stops before convergence
 Eigen::Matrix<double, measurement_dof, state_dof> dh_dx(state &s, bool &valid) {} 
 Eigen::Matrix<double, measurement_dof, measurement_noise_dof> dh_dv(state &s, bool &valid) {}
 ```
-6. Instantiate an **esekf** object **kf** and initialize it with initial state and covariance.
+6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf(init_state,init_P);
+```
+2) default state and covariance:
+```
+esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf;
 ```
 7. Deliver the defined models, maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **limit** into the **esekf** object:
 ```
@@ -71,13 +76,13 @@ kf.init(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, limit);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
 ```
-kf.predict(dt, Q, input); // process noise covariance: Q
+kf.predict(dt, Q, in); // process noise covariance: Q
 ```
 9. Once a measurement **z** is received, an iterated update is executed:
 ```
 kf.update_iterated(z, R); // measurement noise covariance: R
 ```
-*Remarks:*
+*Remarks(1):*
 - We also combine the output equation and its differentiation into an union function, whose usage is the same as the above steps 1-4, and steps 5-9 are shown as follows.
 5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
@@ -91,11 +96,16 @@ measurement h_share(state &s, esekfom::share_datastruct<state, measurement, meas
 	share_data.z = z; // z is the obtained measurement 
 }
 ```
-6. Instantiate an **esekf** object **kf** and initialize it with initial state and covariance.
+6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf(init_state,init_P);
+```
+2) default state and covariance:
+```
+esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf;
 ```
 7. Deliver the defined models, maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **limit** into the **esekf** object:
 ```
@@ -103,11 +113,20 @@ kf.init_share(f, df_dx, df_dw, h_share, Maximum_iter, limit);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
 ```
-kf.predict(dt, Q, input); // process noise covariance: Q
+kf.predict(dt, Q, in); // process noise covariance: Q
 ```
 9. Once a measurement **z** is received, an iterated update is executed:
 ```
 kf.update_iterated_share();
+```
+
+*Remarks(2):*
+- The value of the state **x** and the covariance **P** are able to be changed by functions **change_x()** and **change_P()**:
+```
+state set_x;
+kf.change_x(set_x);
+esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof>::cov set_P;
+kf.change_P(set_P);
 ```
 
 ## 3. Usage when the measurement is an Eigen vector of changing dimension.
@@ -143,9 +162,9 @@ MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ```
 4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>:
 ```
-Eigen::Matrix<double, state_length, 1> f(state &s, input &i) {}
-Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, input &i) {} //notice S2 has length of 3 and dimension of 2
-Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, input &i) {}
+Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {}
+Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, const input &i) {} //notice S2 has length of 3 and dimension of 2
+Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, const input &i) {}
 ```
 5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
@@ -153,11 +172,16 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> h(state &s, bool &valid) {} //the itera
 Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s, bool &valid) {} 
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s, bool &valid) {}
 ```
-6. Instantiate an **esekf** object **kf** and initialize it with initial state and covariance.
+6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
+```
+2) default state and covariance:
+```
+esekfom::esekf<state, process_noise_dof, input> kf;
 ```
 7. Deliver the defined models, maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **limit** into the **esekf** object:
 ```
@@ -165,13 +189,13 @@ kf.init_dyn(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, limit);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
 ```
-kf.predict(dt, Q, input); // process noise covariance: Q
+kf.predict(dt, Q, in); // process noise covariance: Q
 ```
 9. Once a measurement **z** is received, an iterated update is executed:
 ```
 kf.update_iterated_dyn(z, R); // measurement noise covariance: R
 ```
-*Remarks:*
+*Remarks(1):*
 - We also combine the output equation and its differentiation into an union function, whose usage is the same as the above steps 1-4, and steps 5-9 are shown as follows.
 5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
@@ -185,11 +209,16 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> h_dyn_share(state &s, esekfom::dyn_shar
 	dyn_share_data.z = z; // z is the obtained measurement 
 }
 ```
-6. Instantiate an **esekf** object **kf** and initialize it with initial state and covariance.
+6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
+```
+2) default state and covariance:
+```
+esekfom::esekf<state, process_noise_dof, input> kf;
 ```
 7. Deliver the defined models, maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **limit** into the **esekf** object:
 ```
@@ -197,11 +226,20 @@ kf.init_dyn_share(f, df_dx, df_dw, h_dyn_share, Maximum_iter, limit);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
 ```
-kf.predict(dt, Q, input); // process noise covariance: Q
+kf.predict(dt, Q, in); // process noise covariance: Q
 ```
 9. Once a measurement **z** is received, an iterated update is executed:
 ```
 kf.update_iterated_dyn_share();
+```
+
+*Remarks(2):*
+- The value of the state **x** and the covariance **P** are able to be changed by functions **change_x()** and **change_P()**:
+```
+state set_x;
+kf.change_x(set_x);
+esekfom::esekf<state, process_noise_dof, input>::cov set_P;
+kf.change_P(set_P);
 ```
 
 ## 4. Usage when the measurement is a changing manifold during the run time.
@@ -237,20 +275,25 @@ MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ```
 4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>:
 ```
-Eigen::Matrix<double, state_length, 1> f(state &s, input &i) {}
-Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, input &i) {} //notice S2 has length of 3 and dimension of 2
-Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, input &i) {}
+Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {}
+Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, const input &i) {} //notice S2 has length of 3 and dimension of 2
+Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, const input &i) {}
 ```
 5. Implement the differentiation of the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s, bool &valid) {} //the iteration stops before convergence when valid is false
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s, bool &valid) {}
 ```
-6. Instantiate an **esekf** object **kf** and initialize it with initial state and covariance.
+6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
+```
+2)
+```
+esekfom::esekf<state, process_noise_dof, input> kf;
 ```
 7. Deliver the defined models, maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **limit** into the **esekf** object:
 ```
@@ -258,7 +301,7 @@ kf.init_dyn_runtime(f, df_dx, df_dw, dh_dx, dh_dv, Maximum_iter, limit);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
 ```
-kf.predict(dt, Q, input); // process noise covariance: Q
+kf.predict(dt, Q, in); // process noise covariance: Q
 ```
 9. Once a measurement **z** is received, build system measurement as compound manifolds following step 3 and implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> :
 ```
@@ -268,13 +311,18 @@ then an iterated update is executed:
 ```
 kf.update_iterated_dyn_runtime(z, R, h); // measurement noise covariance: R
 ```
-*Remarks:*
+*Remarks(1):*
 - We also combine the output equation and its differentiation into an union function, whose usage is the same as the above steps 1-4, and steps 5-9 are shown as follows.
-5. Instantiate an **esekf** object **kf** and initialize it with initial state and covariance.
+5. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
+```
+2) default state and covariance:
+```
+esekfom::esekf<state, process_noise_dof, input> kf;
 ```
 6. Deliver the defined models, maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **limit** into the **esekf** object:
 ```
@@ -282,7 +330,7 @@ kf.init_dyn_runtime_share(f, df_dx, df_dw, Maximum_iter, limit);
 ```
 7. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
 ```
-kf.predict(dt, Q, input); // process noise covariance: Q
+kf.predict(dt, Q, in); // process noise covariance: Q
 ```
 8. Once a measurement **z** is received, build system measurement as compound manifolds following step 3 and implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
@@ -298,6 +346,15 @@ measurement h_dyn_runtime_share(state &s, esekfom::dyn_runtime_share_datastruct<
 then an iterated update is executed:
 ```
 kf.update_iterated_dyn_runtime_share(z, h_dyn_runtime_share);
+```
+
+*Remarks(2):*
+- The value of the state **x** and the covariance **P** are able to be changed by functions **change_x()** and **change_P()**:
+```
+state set_x;
+kf.change_x(set_x);
+esekfom::esekf<state, process_noise_dof, input>::cov set_P;
+kf.change_P(set_P);
 ```
 
 ## 5. Run the sample

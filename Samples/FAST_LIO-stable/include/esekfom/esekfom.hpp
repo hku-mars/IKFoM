@@ -1791,14 +1791,6 @@ public:
 		}
 	}
 
-	cov& change_P() {
-		return P_;
-	}
-
-	state& change_x() {
-		return x_;
-	}
-
 	void change_x(state &input_state)
 	{
 		x_ = input_state;
