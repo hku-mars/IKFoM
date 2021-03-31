@@ -60,13 +60,13 @@ Eigen::Matrix<double, measurement_dof, state_dof> dh_dx(state &s, bool &valid) {
 Eigen::Matrix<double, measurement_dof, measurement_noise_dof> dh_dv(state &s, bool &valid) {}
 ```
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
-1) initial state and covariance:
+(1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf(init_state,init_P);
 ```
-2) default state and covariance:
+(2) default state and covariance:
 ```
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf;
 ```
@@ -97,13 +97,13 @@ measurement h_share(state &s, esekfom::share_datastruct<state, measurement, meas
 }
 ```
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
-1) initial state and covariance:
+(1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf(init_state,init_P);
 ```
-2) default state and covariance:
+(2) default state and covariance:
 ```
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf;
 ```
@@ -173,13 +173,13 @@ Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s, bool &valid) {}
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s, bool &valid) {}
 ```
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
-1) initial state and covariance:
+(1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
 ```
-2) default state and covariance:
+(2) default state and covariance:
 ```
 esekfom::esekf<state, process_noise_dof, input> kf;
 ```
@@ -210,13 +210,13 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> h_dyn_share(state &s, esekfom::dyn_shar
 }
 ```
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
-1) initial state and covariance:
+(1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
 ```
-2) default state and covariance:
+(2) default state and covariance:
 ```
 esekfom::esekf<state, process_noise_dof, input> kf;
 ```
@@ -285,13 +285,13 @@ Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s, bool &valid) {}
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s, bool &valid) {}
 ```
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
-1) initial state and covariance:
+(1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
 ```
-2)
+(2)
 ```
 esekfom::esekf<state, process_noise_dof, input> kf;
 ```
@@ -314,13 +314,13 @@ kf.update_iterated_dyn_runtime(z, R, h); // measurement noise covariance: R
 *Remarks(1):*
 - We also combine the output equation and its differentiation into an union function, whose usage is the same as the above steps 1-4, and steps 5-9 are shown as follows.
 5. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
-1) initial state and covariance:
+(1) initial state and covariance:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
 ```
-2) default state and covariance:
+(2) default state and covariance:
 ```
 esekfom::esekf<state, process_noise_dof, input> kf;
 ```
