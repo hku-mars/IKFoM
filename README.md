@@ -314,6 +314,7 @@ kf.update_iterated_dyn_runtime(z, R, h); // measurement noise covariance: R
 *Remarks(1):*
 - We also combine the output equation and its differentiation into an union function, whose usage is the same as the above steps 1-4, and steps 5-9 are shown as follows.
 5. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+
 (1) initial state and covariance:
 ```
 state init_state;
