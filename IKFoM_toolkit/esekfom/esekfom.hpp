@@ -1795,9 +1795,12 @@ public:
 	{
 		x_ = input_state;
 
-		x_.build_S2_state();
-		x_.build_SO3_state();
-		x_.build_vect_state();
+		if((!x_.vect_state.size())&&(!x_.SO3_state.size())&&(!x_.S2_state.size()))
+		{
+			x_.build_S2_state();
+			x_.build_SO3_state();
+			x_.build_vect_state();
+		}
 	}
 
 	void change_P(cov &input_cov)
