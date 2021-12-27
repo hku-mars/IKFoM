@@ -380,6 +380,7 @@ public:
 		F_x1 += f_x_final * dt;
 		P_ = (F_x1) * P_ * (F_x1).transpose() + (dt * f_w_final) * Q * (dt * f_w_final).transpose();
 	#endif
+
 	}
 
 	//iterated error state EKF update for measurement as a manifold.
