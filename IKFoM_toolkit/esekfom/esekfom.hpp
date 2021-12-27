@@ -234,7 +234,8 @@ public:
 	//receive system-specific models and their differentions
 	//for measurement as an Eigen matrix whose dimension is changing.
 	//calculate  measurement (z), estimate measurement (h), partial differention matrices (h_x, h_v) and the noise covariance (R) at the same time, by only one function (h_dyn_share_in).
-	void init_dyn_share(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, measurementModel_dyn_share h_dyn_share_in, int maximum_iteration, scalar_type limit_vector[n])
+	template <typename Iterator>
+	void init_dyn_share(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, measurementModel_dyn_share h_dyn_share_in, int maximum_iteration, Iterator limit_vector)
 	{
 		f = f_in;
 		f_x = f_x_in;
@@ -242,7 +243,7 @@ public:
 		h_dyn_share = h_dyn_share_in;
 
 		maximum_iter = maximum_iteration;
-		for(int i=0; i<n; i++)
+		for(int i=0; i<limit_vector.size(); i++)
 		{
 			limit[i] = limit_vector[i];
 		}
@@ -1649,8 +1650,6 @@ public:
 			vectorized_state dx;
 			x_.boxminus(dx, x_propagated);
 			dx_new = dx;
-			
-			
 			
 			P_ = P_propagated;
 			
