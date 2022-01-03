@@ -19,7 +19,7 @@ void IKFoM::h_share_model(state_ikfom &updated_state, esekfom::dyn_share_datastr
 	Mapper& MAP = Mapper::getInstance();
 
 	// Calculate matches
-	Planes matches = MAP.match(
+	Matches matches = MAP.match(
 	    State (updated_state, KF.last_time_integrated),
 	    KF.points2match
 	);
