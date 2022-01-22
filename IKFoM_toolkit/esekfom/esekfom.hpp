@@ -1696,6 +1696,8 @@ public:
 				}
 			}
 
+			Eigen::Matrix<scalar_type, 12, 12> HTH;
+
 			if(n > dof_Measurement)
 			{
 				Eigen::Matrix<scalar_type, Eigen::Dynamic, Eigen::Dynamic> h_x_cur = Eigen::Matrix<scalar_type, Eigen::Dynamic, Eigen::Dynamic>::Zero(dof_Measurement, n);
@@ -1718,7 +1720,7 @@ public:
 				K_x. template block<n, 12>(0, 0) = P_inv. template block<n, 12>(0, 0) * HTH;
 			#else
 				cov P_temp = (P_/R).inverse();
-				Eigen::Matrix<scalar_type, 12, 12> HTH = h_x_.transpose() * h_x_; 
+				HTH = h_x_.transpose() * h_x_; 
 				P_temp. template block<12, 12>(0, 0) += HTH;
 				
 				cov P_inv = P_temp.inverse();
@@ -1729,8 +1731,19 @@ public:
 			}
 
 			Matrix<scalar_type, n, 1> dx_ = K_h + (K_x - Matrix<scalar_type, n, n>::Identity()) * dx_new; 
+			
+			// Degeneracy
+			Eigen::EigenSolver<Eigen::Matrix<scalar_type, 12, 12>> es(HTH);
+			Eigen::Matrix<scalar_type, 6, 6> VEPs = es.eigenvectors().real(). template block<6,6>(0,0);
+			Eigen::Matrix<scalar_type, 1, 6> VAPs = es.eigenvalues().real().head(6);
+			if (VAPs.prod() < 1e-20) VEPs = Eigen::Matrix<scalar_type, 6, 6>::Identity();
+			Eigen::Matrix<scalar_type, 6, 6> selVEPs = VEPs;
+			for (int vapi = 0; vapi < 6; ++vapi) if (VAPs(vapi) < 25.d) selVEPs. template block<1,6>(vapi,0) *= 0;
+			Matrix<scalar_type, n, 1> dx_no_degenerate_ = dx_;
+			dx_no_degenerate_.head(6) = VEPs.inverse() * selVEPs * dx_.head(6);
+
 			state x_before = x_;
-			x_.boxplus(dx_);
+			x_.boxplus(dx_no_degenerate_);
 			dyn_share.converge = true;
 			for(int i = 0; i < n ; i++)
 			{
