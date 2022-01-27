@@ -1617,7 +1617,7 @@ public:
 	
 	// Modified version used in Fast-LIO2
 	//iterated error state EKF update modified for one specific system.
-	void update_iterated_dyn_share_modified(double R, double &solve_time) {
+	void update_iterated_dyn_share_modified(double R, double D, double &solve_time, bool print_degeneracy=false) {
 		
 		dyn_share_datastruct<scalar_type> dyn_share;
 		dyn_share.valid = true;
@@ -1738,7 +1738,8 @@ public:
 			Eigen::Matrix<scalar_type, 1, 6> VAPs = es.eigenvalues().real().head(6);
 			if (VAPs.prod() < 1e-20) VEPs = Eigen::Matrix<scalar_type, 6, 6>::Identity();
 			Eigen::Matrix<scalar_type, 6, 6> selVEPs = VEPs;
-			for (int vapi = 0; vapi < 6; ++vapi) if (VAPs(vapi) < 25.d) selVEPs. template block<1,6>(vapi,0) *= 0;
+			for (int vapi = 0; vapi < 6; ++vapi) if (VAPs(vapi) < D) selVEPs. template block<1,6>(vapi,0) *= 0;
+			if (print_degeneracy) { for (int vapi = 0; vapi < 6; ++vapi) std::cout << VAPs(vapi) << " "; std::cout << std::endl; }
 			Matrix<scalar_type, n, 1> dx_no_degenerate_ = dx_;
 			dx_no_degenerate_.head(6) = VEPs.inverse() * selVEPs * dx_.head(6);
 
