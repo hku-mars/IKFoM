@@ -1733,7 +1733,7 @@ public:
 			Matrix<scalar_type, n, 1> dx_ = K_h + (K_x - Matrix<scalar_type, n, n>::Identity()) * dx_new; 
 			
 			// Degeneracy
-			Eigen::EigenSolver<Eigen::Matrix<scalar_type, 12, 12>> es(HTH);
+			Eigen::EigenSolver<Eigen::Matrix<scalar_type, 6, 6>> es(HTH. template block<6,6>(0,0));
 			Eigen::Matrix<scalar_type, 6, 6> VEPs = es.eigenvectors().real(). template block<6,6>(0,0);
 			Eigen::Matrix<scalar_type, 1, 6> VAPs = es.eigenvalues().real().head(6);
 			if (VAPs.prod() < 1e-20) VEPs = Eigen::Matrix<scalar_type, 6, 6>::Identity();
