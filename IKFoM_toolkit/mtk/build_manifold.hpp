@@ -101,6 +101,9 @@
 #define MTK_BOXPLUS(          type, id) id.boxplus(MTK::subvector(__vec, &self::id), __scale);
 #define MTK_OPLUS(               type, id) id.oplus(MTK::subvector_(__vec, &self::id), __scale);
 #define MTK_BOXMINUS(         type, id) id.boxminus(MTK::subvector(__res, &self::id), __oth.id);
+#define MTK_HAT(              type, id) if(id.IDX == idx){id.hat(vec, res);}
+#define MTK_JACOB_RIGHT_INV(     type, id) if(id.IDX == idx){id.Jacob_right_inv(vec, res);}
+#define MTK_JACOB_RIGHT(         type, id) if(id.IDX == idx){id.Jacob_right(vec, res);}
 #define MTK_S2_hat(          type, id) if(id.IDX == idx){id.S2_hat(res);}
 #define MTK_S2_Nx_yy(            type, id) if(id.IDX == idx){id.S2_Nx_yy(res);}
 #define MTK_S2_Mx(          type, id) if(id.IDX == idx){id.S2_Mx(res, dx);}
@@ -109,8 +112,9 @@
 #define MTK_S2_state(         type, id) if(id.TYP == 1){S2_state.push_back(std::make_pair(id.IDX, id.DIM));}
 #define MTK_SO3_state(        type, id) if(id.TYP == 2){(SO3_state).push_back(std::make_pair(id.IDX, id.DIM));}
 #define MTK_vect_state(        type, id) if(id.TYP == 0){(vect_state).push_back(std::make_pair(std::make_pair(id.IDX, id.DIM), type::DOF));}
+#define MTK_SEN_state(        type, id) if(id.TYP == 4){(SEN_state).push_back(std::make_pair(std::make_pair(id.IDX, id.DIM), type::DOF));}
 
-#define MTK_SUBVARLIST(seq, S2state, SO3state) \
+#define MTK_SUBVARLIST(seq, S2state, SO3state, SENstate) \
 BOOST_PP_FOR_1( \
 		( \
 				BOOST_PP_SEQ_SIZE(seq), \
@@ -119,37 +123,39 @@ BOOST_PP_FOR_1( \
 				0,\
 				0,\
 				S2state,\
-				SO3state ),\
+				SO3state,\
+				SENstate ),\
 		MTK_ENTRIES_TEST, MTK_ENTRIES_NEXT, MTK_ENTRIES_OUTPUT)
 
-#define MTK_PUT_TYPE(type, id, dof, dim, S2state, SO3state) \
+#define MTK_PUT_TYPE(type, id, dof, dim, S2state, SO3state, SENstate) \
 	MTK::SubManifold<type, dof, dim> id; 
-#define MTK_PUT_TYPE_AND_ENUM(type, id, dof, dim, S2state, SO3state) \
-	MTK_PUT_TYPE(type, id, dof, dim, S2state, SO3state) \
+#define MTK_PUT_TYPE_AND_ENUM(type, id, dof, dim, S2state, SO3state, SENstate) \
+	MTK_PUT_TYPE(type, id, dof, dim, S2state, SO3state, SENstate) \
 	enum {DOF = type::DOF + dof}; \
 	enum {DIM = type::DIM+dim}; \
 	typedef type::scalar scalar; 
 
 #define MTK_ENTRIES_OUTPUT(r, state) MTK_ENTRIES_OUTPUT_I state
-#define MTK_ENTRIES_OUTPUT_I(s, head, seq, dof, dim, S2state, SO3state) \
+#define MTK_ENTRIES_OUTPUT_I(s, head, seq, dof, dim, S2state, SO3state, SENstate) \
 	MTK_APPLY_MACRO_ON_TUPLE(~, \
 		BOOST_PP_IF(BOOST_PP_DEC(s), MTK_PUT_TYPE, MTK_PUT_TYPE_AND_ENUM), \
-		( BOOST_PP_TUPLE_REM_2 head, dof, dim, S2state, SO3state)) 
+		( BOOST_PP_TUPLE_REM_2 head, dof, dim, S2state, SO3state, SENstate)) 
 
 #define MTK_ENTRIES_TEST(r, state) MTK_TUPLE_ELEM_4_0 state
 
 //! this used to be BOOST_PP_TUPLE_ELEM_4_0:
-#define MTK_TUPLE_ELEM_4_0(a,b,c,d,e,f, g) a
+#define MTK_TUPLE_ELEM_4_0(a,b,c,d,e,f, g, h) a
 
 #define MTK_ENTRIES_NEXT(r, state) MTK_ENTRIES_NEXT_I state
-#define MTK_ENTRIES_NEXT_I(len, head, seq, dof, dim, S2state, SO3state) ( \
+#define MTK_ENTRIES_NEXT_I(len, head, seq, dof, dim, S2state, SO3state, SENstate) ( \
 		BOOST_PP_DEC(len), \
 		BOOST_PP_SEQ_HEAD(seq), \
 		BOOST_PP_SEQ_TAIL(seq), \
 		dof + BOOST_PP_TUPLE_ELEM_2_0 head::DOF,\
 		dim + BOOST_PP_TUPLE_ELEM_2_0 head::DIM,\
 		S2state,\
-		SO3state)
+		SO3state,\
+		SENstate )
 
 #endif /* not PARSED_BY_DOXYGEN */
 
@@ -183,7 +189,8 @@ struct name { \
 	std::vector<std::pair<int, int> > S2_state;\
 	std::vector<std::pair<int, int> > SO3_state;\
 	std::vector<std::pair<std::pair<int, int>, int> > vect_state;\
-	MTK_SUBVARLIST(entries, S2_state, SO3_state) \
+	std::vector<std::pair<std::pair<int, int>, int> > SEN_state;\
+	MTK_SUBVARLIST(entries, S2_state, SO3_state, SEN_state) \
 	name ( \
 		MTK_TRANSFORM_COMMA(MTK_CONSTRUCTOR_ARG, entries) \
 		) : \
@@ -209,6 +216,18 @@ struct name { \
 	}\
 	void build_SO3_state(){\
 		MTK_TRANSFORM(MTK_SO3_state, entries)\
+	}\
+	void build_SEN_state(){\
+		MTK_TRANSFORM(MTK_SEN_state, entries)\
+	}\
+	void Lie_hat(Eigen::VectorXd &vec, Eigen::MatrixXd &res, int idx) {\
+		MTK_TRANSFORM(MTK_HAT, entries)\
+	}\
+	void Lie_Jacob_Right_Inv(Eigen::VectorXd &vec, Eigen::MatrixXd &res, int idx) {\
+		MTK_TRANSFORM(MTK_JACOB_RIGHT_INV, entries)\
+	}\
+	void Lie_Jacob_Right(Eigen::VectorXd &vec, Eigen::MatrixXd &res, int idx) {\
+		MTK_TRANSFORM(MTK_JACOB_RIGHT, entries)\
 	}\
 	void S2_hat(Eigen::Matrix<scalar, 3, 3> &res, int idx) {\
 		MTK_TRANSFORM(MTK_S2_hat, entries)\

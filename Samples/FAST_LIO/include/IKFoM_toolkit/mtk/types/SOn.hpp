@@ -151,13 +151,6 @@ struct SO2 : public Eigen::Rotation2D<_scalar> {
     	res = Eigen::Matrix<scalar, 3, 2>::Zero();
 	}
 
-	void S2_Bx(Eigen::Matrix<scalar, 3, 2> &res)
-	{
-		std::cerr << "wrong idx for S2" << std::endl;
-		std::exit(100);	
-    	res = Eigen::Matrix<scalar, 3, 2>::Zero();
-	}
-
 	void oplus(MTK::vectview<const scalar, DOF> vec, scalar scale = 1) {
 		base::angle() += scale * vec[0];
 	}
@@ -172,7 +165,15 @@ struct SO2 : public Eigen::Rotation2D<_scalar> {
 	friend std::istream& operator>>(std::istream &is, SO2<scalar>& ang){
 		return is >> ang.angle();
 	}
-
+	void hat(Eigen::VectorXd& v, Eigen::MatrixXd &res) {
+		std::cout << "wrong idx" << std::endl;
+	}
+	void Jacob_right_inv(Eigen::VectorXd& v, Eigen::MatrixXd &res) {
+		std::cout << "wrong idx" << std::endl;
+	}
+	void Jacob_right(Eigen::VectorXd& v, Eigen::MatrixXd &res) {
+		std::cout << "wrong idx" << std::endl;
+	}
 };
 
 
@@ -251,6 +252,46 @@ struct SO3 : public Eigen::Quaternion<_scalar, Options> {
 		*this = *this * delta;
 	}
 
+	// void hat(MTK::vectview<const scalar, DOF>& v, Eigen::Matrix<scalar, 3, 3> &res) {
+	void hat(Eigen::VectorXd& v, Eigen::MatrixXd &res) {
+		// Eigen::Matrix<scalar, 3, 3> res;
+		res << 0, -v[2], v[1],
+			v[2], 0, -v[0],
+			-v[1], v[0], 0;
+		// return res;
+	}
+
+	// void Jacob_right_inv(MTK::vectview<const scalar, DOF> vec, Eigen::Matrix<scalar, 3, 3> & res){
+	void Jacob_right_inv(Eigen::VectorXd& vec, Eigen::MatrixXd &res){
+    	Eigen::MatrixXd hat_v;
+		hat(vec, hat_v);
+    	if(vec.norm() > MTK::tolerance<scalar>())
+    	{
+        	res = Eigen::Matrix<scalar, 3, 3>::Identity() + 0.5 * hat_v + (1 - vec.norm() * std::cos(vec.norm() / 2) / 2 / std::sin(vec.norm() / 2)) * hat_v * hat_v / vec.squaredNorm();
+    	}
+    	else
+    	{
+        	res = Eigen::Matrix<scalar, 3, 3>::Identity();
+    	}
+    	// return res;
+	}
+
+	// void Jacob_right(MTK::vectview<const scalar, DOF> & v, Eigen::Matrix<scalar, 3, 3> &res){
+	void Jacob_right(Eigen::VectorXd& v, Eigen::MatrixXd &res){
+		Eigen::MatrixXd hat_v;
+		hat(v, hat_v);
+		double squaredNorm = v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
+		double norm = std::sqrt(squaredNorm);
+		if(norm < MTK::tolerance<scalar>()){
+			res = Eigen::Matrix<scalar, 3, 3>::Identity();
+		}
+		else{
+			res = Eigen::Matrix<scalar, 3, 3>::Identity() - (1 - std::cos(norm)) / squaredNorm * hat_v + (1 - std::sin(norm) / norm) / squaredNorm * hat_v * hat_v;
+		}
+		// return res;
+	}
+
+
 	void S2_hat(Eigen::Matrix<scalar, 3, 3> &res)
 	{
 		res = Eigen::Matrix<scalar, 3, 3>::Zero();
@@ -263,13 +304,6 @@ struct SO3 : public Eigen::Quaternion<_scalar, Options> {
 	}
 
 	void S2_Mx(Eigen::Matrix<scalar, 3, 2> &res, MTK::vectview<const scalar, 2> delta)
-	{
-		std::cerr << "wrong idx for S2" << std::endl;
-		std::exit(100);	
-    	res = Eigen::Matrix<scalar, 3, 2>::Zero();
-	}
-
-	void S2_Bx(Eigen::Matrix<scalar, 3, 2> & res)
 	{
 		std::cerr << "wrong idx for S2" << std::endl;
 		std::exit(100);	

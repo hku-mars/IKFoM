@@ -165,6 +165,16 @@ public:
 			res = theta/v_sin * Bx.transpose() * MTK::hat(other.vec)*vec;
 		}
 	}
+
+	void hat(Eigen::VectorXd& v, Eigen::MatrixXd &res) {
+		std::cout << "wrong idx" << std::endl;
+	}
+	void Jacob_right_inv(Eigen::VectorXd& v, Eigen::MatrixXd &res) {
+		std::cout << "wrong idx" << std::endl;
+	}
+	void Jacob_right(Eigen::VectorXd& v, Eigen::MatrixXd &res) {
+		std::cout << "wrong idx" << std::endl;
+	}
 	
 	void S2_hat(Eigen::Matrix<scalar, 3, 3> &res)
 	{
