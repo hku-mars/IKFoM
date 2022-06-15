@@ -123,15 +123,16 @@ public:
 	typedef Eigen::Matrix<scalar_type, m, n> processMatrix1(state &, const input &);
 	typedef Eigen::Matrix<scalar_type, m, process_noise_dof> processMatrix2(state &, const input &);
 	typedef Eigen::Matrix<scalar_type, process_noise_dof, process_noise_dof> processnoisecovariance;
+	
 	typedef measurement measurementModel(state &, bool &);
 	typedef measurement measurementModel_share(state &, share_datastruct<state, measurement, measurement_noise_dof> &);
 	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn(state &, bool &);
 	typedef void measurementModel_dyn_share_modified(state &,  dyn_share_datastruct<scalar_type> &);
 	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn_share(state &,  dyn_share_datastruct<scalar_type> &);
-	typedef Eigen::Matrix<scalar_type ,l, n> measurementMatrix1(state &, bool&);
-	typedef Eigen::Matrix<scalar_type , Eigen::Dynamic, n> measurementMatrix1_dyn(state &, bool&);
-	typedef Eigen::Matrix<scalar_type ,l, measurement_noise_dof> measurementMatrix2(state &, bool&);
-	typedef Eigen::Matrix<scalar_type ,Eigen::Dynamic, Eigen::Dynamic> measurementMatrix2_dyn(state &, bool&);
+	typedef Eigen::Matrix<scalar_type ,l, n> measurementMatrix1(state &);
+	typedef Eigen::Matrix<scalar_type , Eigen::Dynamic, n> measurementMatrix1_dyn(state &);
+	typedef Eigen::Matrix<scalar_type ,l, measurement_noise_dof> measurementMatrix2(state &);
+	typedef Eigen::Matrix<scalar_type ,Eigen::Dynamic, Eigen::Dynamic> measurementMatrix2_dyn(state &);
 	typedef Eigen::Matrix<scalar_type, measurement_noise_dof, measurement_noise_dof> measurementnoisecovariance;
 	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, Eigen::Dynamic> measurementnoisecovariance_dyn;
 
@@ -612,70 +613,6 @@ public:
 			{
 				L_ = P_;
 		
-				// Matrix<scalar_type, 3, 3> res_temp_SO3;
-				// MTK::vect<3, scalar_type> seg_SO3;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.SO3_state.begin(); it != x_.SO3_state.end(); it++) {
-				// 	int idx = (*it).first;
-				// 	for(int i = 0; i < 3; i++){
-				// 		seg_SO3(i) = dx_(i + idx);
-				// 	}
-				// 	res_temp_SO3 = A_matrix(seg_SO3).transpose();
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_. template block<3, 1>(idx, i)); 
-				// 	}
-				// 	if(n > l)
-				// 	{
-				// 		for(int i = 0; i < l; i++){
-				// 			K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<3, 1>(idx, i) = res_temp_SO3 * (K_x. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 3>(i, idx) = (L_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 		P_. template block<1, 3>(i, idx) = (P_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 	}
-				// }
-
-				// Matrix<scalar_type, 2, 2> res_temp_S2;
-				// MTK::vect<2, scalar_type> seg_S2;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.S2_state.begin(); it != x_.S2_state.end(); it++) {
-				// 	int idx = (*it).first;
-			
-				// 	for(int i = 0; i < 2; i++){
-				// 		seg_S2(i) = dx_(i + idx);
-				// 	}
-			
-				// 	Eigen::Matrix<scalar_type, 2, 3> Nx;
-				// 	Eigen::Matrix<scalar_type, 3, 2> Mx;
-				// 	x_.S2_Nx_yy(Nx, idx);
-				// 	x_propagated.S2_Mx(Mx, seg_S2, idx);
-				// 	res_temp_S2 = Nx * Mx; 
-		
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<2, 1>(idx, i) = res_temp_S2 * (P_. template block<2, 1>(idx, i)); 
-				// 	}
-				// 	if(n > l)
-				// 	{
-				// 		for(int i = 0; i < l; i++){
-				// 			K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<2, 1>(idx, i) = res_temp_S2 * (K_x. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 2>(i, idx) = (L_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 		P_. template block<1, 2>(i, idx) = (P_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 	}
-				// }
 				if(n > l)
 				{
 					P_ = L_ - K_ * h_x_ * P_;
@@ -867,70 +804,6 @@ public:
 			{
 				L_ = P_;
 		
-				// Matrix<scalar_type, 3, 3> res_temp_SO3;
-				// MTK::vect<3, scalar_type> seg_SO3;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.SO3_state.begin(); it != x_.SO3_state.end(); it++) {
-				// 	int idx = (*it).first;
-				// 	for(int i = 0; i < 3; i++){
-				// 		seg_SO3(i) = dx_(i + idx);
-				// 	}
-				// 	res_temp_SO3 = A_matrix(seg_SO3).transpose();
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_. template block<3, 1>(idx, i)); 
-				// 	}
-				// 	if(n > l)
-				// 	{
-				// 		for(int i = 0; i < l; i++){
-				// 			K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<3, 1>(idx, i) = res_temp_SO3 * (K_x. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 3>(i, idx) = (L_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 		P_. template block<1, 3>(i, idx) = (P_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 	}
-				// }
-
-				// Matrix<scalar_type, 2, 2> res_temp_S2;
-				// MTK::vect<2, scalar_type> seg_S2;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.S2_state.begin(); it != x_.S2_state.end(); it++) {
-				// 	int idx = (*it).first;
-			
-				// 	for(int i = 0; i < 2; i++){
-				// 		seg_S2(i) = dx_(i + idx);
-				// 	}
-			
-				// 	Eigen::Matrix<scalar_type, 2, 3> Nx;
-				// 	Eigen::Matrix<scalar_type, 3, 2> Mx;
-				// 	x_.S2_Nx_yy(Nx, idx);
-				// 	x_propagated.S2_Mx(Mx, seg_S2, idx);
-				// 	res_temp_S2 = Nx * Mx; 
-		
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<2, 1>(idx, i) = res_temp_S2 * (P_. template block<2, 1>(idx, i)); 
-				// 	}
-				// 	if(n > l)
-				// 	{
-				// 		for(int i = 0; i < l; i++){
-				// 			K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<2, 1>(idx, i) = res_temp_S2 * (K_x. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 2>(i, idx) = (L_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 		P_. template block<1, 2>(i, idx) = (P_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 	}
-				// }
 				if(n > l)
 				{
 					P_ = L_ - K_ * h_x_ * P_;
@@ -1111,70 +984,6 @@ public:
 				L_ = P_;
 				std::cout << "iteration time:" << t << "," << i << std::endl;
 		
-				// Matrix<scalar_type, 3, 3> res_temp_SO3;
-				// MTK::vect<3, scalar_type> seg_SO3;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.SO3_state.begin(); it != x_.SO3_state.end(); it++) {
-				// 	int idx = (*it).first;
-				// 	for(int i = 0; i < 3; i++){
-				// 		seg_SO3(i) = dx_(i + idx);
-				// 	}
-				// 	res_temp_SO3 = MTK::A_matrix(seg_SO3).transpose();
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_. template block<3, 1>(idx, i)); 
-				// 	}
-				// 	if(n > dof_Measurement)
-				// 	{
-				// 		for(int i = 0; i < dof_Measurement; i++){
-				// 			K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<3, 1>(idx, i) = res_temp_SO3 * (K_x. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 3>(i, idx) = (L_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 		P_. template block<1, 3>(i, idx) = (P_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 	}
-				// }
-
-				// Matrix<scalar_type, 2, 2> res_temp_S2;
-				// MTK::vect<2, scalar_type> seg_S2;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.S2_state.begin(); it != x_.S2_state.end(); it++) {
-				// 	int idx = (*it).first;
-			
-				// 	for(int i = 0; i < 2; i++){
-				// 		seg_S2(i) = dx_(i + idx);
-				// 	}
-			
-				// 	Eigen::Matrix<scalar_type, 2, 3> Nx;
-				// 	Eigen::Matrix<scalar_type, 3, 2> Mx;
-				// 	x_.S2_Nx_yy(Nx, idx);
-				// 	x_propagated.S2_Mx(Mx, seg_S2, idx);
-				// 	res_temp_S2 = Nx * Mx; 
-		
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<2, 1>(idx, i) = res_temp_S2 * (P_. template block<2, 1>(idx, i)); 
-				// 	}
-				// 	if(n > dof_Measurement)
-				// 	{
-				// 		for(int i = 0; i < dof_Measurement; i++){
-				// 			K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<2, 1>(idx, i) = res_temp_S2 * (K_x. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 2>(i, idx) = (L_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 		P_. template block<1, 2>(i, idx) = (P_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 	}
-				// }
 				if(n > dof_Measurement)
 				{
 					P_ = L_ - K_*h_x_*P_;
@@ -1360,70 +1169,6 @@ public:
 				L_ = P_;
 				std::cout << "iteration time:" << t << "," << i << std::endl;
 		
-				// Matrix<scalar_type, 3, 3> res_temp_SO3;
-				// MTK::vect<3, scalar_type> seg_SO3;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.SO3_state.begin(); it != x_.SO3_state.end(); it++) {
-				// 	int idx = (*it).first;
-				// 	for(int i = 0; i < 3; i++){
-				// 		seg_SO3(i) = dx_(i + idx);
-				// 	}
-				// 	res_temp_SO3 = MTK::A_matrix(seg_SO3).transpose();
-				// 	for(int i = 0; i < int(n); i++){
-				// 		L_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_. template block<3, 1>(idx, i)); 
-				// 	}
-				// 	if(n > dof_Measurement)
-				// 	{
-				// 		for(int i = 0; i < dof_Measurement; i++){
-				// 			K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<3, 1>(idx, i) = res_temp_SO3 * (K_x. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 3>(i, idx) = (L_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 		P_. template block<1, 3>(i, idx) = (P_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 	}
-				// }
-
-				// Matrix<scalar_type, 2, 2> res_temp_S2;
-				// MTK::vect<2, scalar_type> seg_S2;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.S2_state.begin(); it != x_.S2_state.end(); it++) {
-				// 	int idx = (*it).first;
-			
-				// 	for(int i = 0; i < 2; i++){
-				// 		seg_S2(i) = dx_(i + idx);
-				// 	}
-			
-				// 	Eigen::Matrix<scalar_type, 2, 3> Nx;
-				// 	Eigen::Matrix<scalar_type, 3, 2> Mx;
-				// 	x_.S2_Nx_yy(Nx, idx);
-				// 	x_propagated.S2_Mx(Mx, seg_S2, idx);
-				// 	res_temp_S2 = Nx * Mx; 
-		
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<2, 1>(idx, i) = res_temp_S2 * (P_. template block<2, 1>(idx, i)); 
-				// 	}
-				// 	if(n > dof_Measurement)
-				// 	{
-				// 		for(int i = 0; i < dof_Measurement; i++){
-				// 			K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<2, 1>(idx, i) = res_temp_S2 * (K_x. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 2>(i, idx) = (L_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 		P_. template block<1, 2>(i, idx) = (P_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 	}
-				// }
 				if(n > dof_Measurement)
 				{
 					P_ = L_ - K_*h_x*P_;
@@ -1609,70 +1354,6 @@ public:
 				L_ = P_;
 				std::cout << "iteration time:" << t << "," << i << std::endl;
 		
-				// Matrix<scalar_type, 3, 3> res_temp_SO3;
-				// MTK::vect<3, scalar_type> seg_SO3;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.SO3_state.begin(); it != x_.SO3_state.end(); it++) {
-				// 	int idx = (*it).first;
-				// 	for(int i = 0; i < 3; i++){
-				// 		seg_SO3(i) = dx_(i + idx);
-				// 	}
-				// 	res_temp_SO3 = MTK::A_matrix(seg_SO3).transpose();
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_. template block<3, 1>(idx, i)); 
-				// 	}
-				// 	if(n > dof_Measurement)
-				// 	{
-				// 		for(int i = 0; i < dof_Measurement; i++){
-				// 			K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<3, 1>(idx, i) = res_temp_SO3 * (K_x. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 3>(i, idx) = (L_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 		P_. template block<1, 3>(i, idx) = (P_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 	}
-				// }
-
-				// Matrix<scalar_type, 2, 2> res_temp_S2;
-				// MTK::vect<2, scalar_type> seg_S2;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.S2_state.begin(); it != x_.S2_state.end(); it++) {
-				// 	int idx = (*it).first;
-			
-				// 	for(int i = 0; i < 2; i++){
-				// 		seg_S2(i) = dx_(i + idx);
-				// 	}
-			
-				// 	Eigen::Matrix<scalar_type, 2, 3> Nx;
-				// 	Eigen::Matrix<scalar_type, 3, 2> Mx;
-				// 	x_.S2_Nx_yy(Nx, idx);
-				// 	x_propagated.S2_Mx(Mx, seg_S2, idx);
-				// 	res_temp_S2 = Nx * Mx; 
-		
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<2, 1>(idx, i) = res_temp_S2 * (P_. template block<2, 1>(idx, i)); 
-				// 	}
-				// 	if(n > dof_Measurement)
-				// 	{
-				// 		for(int i = 0; i < dof_Measurement; i++){
-				// 			K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<2, 1>(idx, i) = res_temp_S2 * (K_x. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 2>(i, idx) = (L_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 		P_. template block<1, 2>(i, idx) = (P_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 	}
-				// }
 				if(n > dof_Measurement)
 				{
 					P_ = L_ - K_*h_x_*P_;
@@ -1862,70 +1543,6 @@ public:
 				L_ = P_;
 				std::cout << "iteration time:" << t << "," << i << std::endl;
 		
-				// Matrix<scalar_type, 3, 3> res_temp_SO3;
-				// MTK::vect<3, scalar_type> seg_SO3;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.SO3_state.begin(); it != x_.SO3_state.end(); it++) {
-				// 	int idx = (*it).first;
-				// 	for(int i = 0; i < 3; i++){
-				// 		seg_SO3(i) = dx_(i + idx);
-				// 	}
-				// 	res_temp_SO3 = MTK::A_matrix(seg_SO3).transpose();
-				// 	for(int i = 0; i < int(n); i++){
-				// 		L_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_. template block<3, 1>(idx, i)); 
-				// 	}
-				// 	if(n > dof_Measurement)
-				// 	{
-				// 		for(int i = 0; i < dof_Measurement; i++){
-				// 			K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<3, 1>(idx, i) = res_temp_SO3 * (K_x. template block<3, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 3>(i, idx) = (L_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 		P_. template block<1, 3>(i, idx) = (P_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 	}
-				// }
-
-				// Matrix<scalar_type, 2, 2> res_temp_S2;
-				// MTK::vect<2, scalar_type> seg_S2;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.S2_state.begin(); it != x_.S2_state.end(); it++) {
-				// 	int idx = (*it).first;
-			
-				// 	for(int i = 0; i < 2; i++){
-				// 		seg_S2(i) = dx_(i + idx);
-				// 	}
-			
-				// 	Eigen::Matrix<scalar_type, 2, 3> Nx;
-				// 	Eigen::Matrix<scalar_type, 3, 2> Mx;
-				// 	x_.S2_Nx_yy(Nx, idx);
-				// 	x_propagated.S2_Mx(Mx, seg_S2, idx);
-				// 	res_temp_S2 = Nx * Mx; 
-		
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<2, 1>(idx, i) = res_temp_S2 * (P_. template block<2, 1>(idx, i)); 
-				// 	}
-				// 	if(n > dof_Measurement)
-				// 	{
-				// 		for(int i = 0; i < dof_Measurement; i++){
-				// 			K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	else
-				// 	{
-				// 		for(int i = 0; i < n; i++){
-				// 			K_x. template block<2, 1>(idx, i) = res_temp_S2 * (K_x. template block<2, 1>(idx, i));
-				// 		}
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 2>(i, idx) = (L_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 		P_. template block<1, 2>(i, idx) = (P_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 	}
-				// }
 				if(n > dof_Measurement)
 				{
 					P_ = L_ - K_*h_x * P_;
@@ -2276,51 +1893,6 @@ public:
 			if(t > 1 || i == maximum_iter - 1)
 			{
 				L_ = P_;
-				// Matrix<scalar_type, 3, 3> res_temp_SO3;
-				// MTK::vect<3, scalar_type> seg_SO3;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.SO3_state.begin(); it != x_.SO3_state.end(); it++) {
-				// 	int idx = (*it).first;
-				// 	for(int i = 0; i < 3; i++){
-				// 		seg_SO3(i) = dx_(i + idx);
-				// 	}
-				// 	res_temp_SO3 = MTK::A_matrix(seg_SO3).transpose();
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<3, 1>(idx, i) = res_temp_SO3 * (P_. template block<3, 1>(idx, i)); 
-				// 	}
-				// 	for(int i = 0; i < 12; i++){
-				// 		K_x. template block<3, 1>(idx, i) = res_temp_SO3 * (K_x. template block<3, 1>(idx, i));
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 3>(i, idx) = (L_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 		P_. template block<1, 3>(i, idx) = (P_. template block<1, 3>(i, idx)) * res_temp_SO3.transpose();
-				// 	}
-				// }
-
-				// Matrix<scalar_type, 2, 2> res_temp_S2;
-				// MTK::vect<2, scalar_type> seg_S2;
-				// for(typename std::vector<std::pair<int, int> >::iterator it = x_.S2_state.begin(); it != x_.S2_state.end(); it++) {
-				// 	int idx = (*it).first;
-			
-				// 	for(int i = 0; i < 2; i++){
-				// 		seg_S2(i) = dx_(i + idx);
-				// 	}
-
-				// 	Eigen::Matrix<scalar_type, 2, 3> Nx;
-				// 	Eigen::Matrix<scalar_type, 3, 2> Mx;
-				// 	x_.S2_Nx_yy(Nx, idx);
-				// 	x_propagated.S2_Mx(Mx, seg_S2, idx);
-				// 	res_temp_S2 = Nx * Mx; 
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<2, 1>(idx, i) = res_temp_S2 * (P_. template block<2, 1>(idx, i)); 
-				// 	}
-				// 	for(int i = 0; i < 12; i++){
-				// 		K_x. template block<2, 1>(idx, i) = res_temp_S2 * (K_x. template block<2, 1>(idx, i));
-				// 	}
-				// 	for(int i = 0; i < n; i++){
-				// 		L_. template block<1, 2>(i, idx) = (L_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 		P_. template block<1, 2>(i, idx) = (P_. template block<1, 2>(i, idx)) * res_temp_S2.transpose();
-				// 	}
-				// }
 				
 				P_ = L_ - K_x.template block<n, 12>(0, 0) * P_.template block<12, n>(0, 0);
 				return;

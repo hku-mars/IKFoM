@@ -45,7 +45,7 @@ MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ((vect3, offset_T_L_I)) 
 );
 ```
-4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> that is defined as <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, where w=0 could be left out:
+4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> that is defined as <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"><see here>, and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, where w=0 could be left out:
 ```
 Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {
 	Eigen::Matrix<double, state_length, 1> res = Eigen::Matrix<double, state_length, 1>::Zero();
@@ -55,31 +55,33 @@ Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {
 	return res;
 }
 Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, const input &i) //notice S2 has length of 3 and dimension of 2 {
-	Eigen::Matrix<double, 24, 23> cov = Eigen::Matrix<double, 24, 23>::Zero();
+	Eigen::Matrix<double, state_length, state_dof> cov = Eigen::Matrix<double, state_length, state_dof>::Zero();
 	cov.template block<3, 3>(0, 12) = Eigen::Matrix3d::Identity();
 	return cov;
 }
 Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, const input &i) {
-	Eigen::Matrix<double, 24, 12> cov = Eigen::Matrix<double, 24, 12>::Zero();
+	Eigen::Matrix<double, state_length, process_noise_dof> cov = Eigen::Matrix<double, state_length, process_noise_dof>::Zero();
 	cov.template block<3, 3>(12, 3) = -s.rot.toRotationMatrix();
 	return cov;
 }
 ```
-Those functions would be called during the state predict
+Those functions would be called during the ekf state predict
+
 5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 measurement h(state &s, bool &valid) // the iteration stops before convergence whenever the user set valid as false
 {
 	if (condition){ valid = false; 
 	} // other conditions could be used to stop the ekf update iteration before convergence, otherwise the iteration will not stop until the condition of convergence is satisfied.
-	measurement z;
-	z.position = s.pos;
-	return z;
+	measurement h_;
+	h_.position = s.pos;
+	return h_;
 }
 Eigen::Matrix<double, measurement_dof, state_dof> dh_dx(state &s) {} 
 Eigen::Matrix<double, measurement_dof, measurement_noise_dof> dh_dv(state &s) {}
 ```
-Those functions would be called during the state update
+Those functions would be called during the ekf state update
+
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
 
 (1) initial state and covariance:
@@ -92,11 +94,12 @@ esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_d
 ```
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf;
 ```
-where **process_noise_dof** is the dimension of process noise, with the type of int, and so for **measurement_noise_dof**.
+where **process_noise_dof** is the dimension of process noise, with the type of std int, and so for **measurement_noise_dof**.
+
 7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
 ```
 double epsi[state_dof] = {0.001};
-fill(epsi, epsi+23, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
+fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
@@ -109,6 +112,7 @@ kf.update_iterated(z, R); // measurement noise covariance: R, an Eigen matrix
 ```
 *Remarks(1):*
 - We also combine the output equation and its differentiation into an union function, whose usage is the same as the above steps 1-4, and steps 5-9 are shown as follows.
+
 5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 measurement h_share(state &s, esekfom::share_datastruct<state, measurement, measurement_noise_dof> &share_data) 
@@ -120,12 +124,13 @@ measurement h_share(state &s, esekfom::share_datastruct<state, measurement, meas
 	share_data.R = R; // R is the measurement noise covariance
 	share_data.z = z; // z is the obtained measurement 
 
-	measurement h;
-	h.position = s.pos;
-	return h;
+	measurement h_;
+	h_.position = s.pos;
+	return h_;
 }
 ```
-This function would be called during ekf update, and the output function and its derivatives, the measurement and the measurement noise would be obtained from this one union function
+This function would be called during ekf state update, and the output function and its derivatives, the measurement and the measurement noise would be obtained from this one union function
+
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
 
 (1) initial state and covariance:
@@ -141,7 +146,7 @@ esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_d
 7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
 ```
 double epsi[state_dof] = {0.001};
-fill(epsi, epsi+23, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
+fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_share(f, df_dx, df_dw, h_share, Maximum_iter, epsi);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
@@ -193,7 +198,7 @@ MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ((vect3, offset_T_L_I)) 
 );
 ```
-4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> that is defined as <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, where w=0 could be left out:
+4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> that is defined as <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"> <see here>, and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, where w=0 could be left out:
 ```
 Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {
 	Eigen::Matrix<double, state_length, 1> res = Eigen::Matrix<double, state_length, 1>::Zero();
@@ -203,30 +208,32 @@ Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {
 	return res;
 }
 Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, const input &i) //notice S2 has length of 3 and dimension of 2 {
-	Eigen::Matrix<double, 24, 23> cov = Eigen::Matrix<double, 24, 23>::Zero();
+	Eigen::Matrix<double, state_length, state_dof> cov = Eigen::Matrix<double, state_length, state_dof>::Zero();
 	cov.template block<3, 3>(0, 12) = Eigen::Matrix3d::Identity();
 	return cov;
 }
 Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, const input &i) {
-	Eigen::Matrix<double, 24, 12> cov = Eigen::Matrix<double, 24, 12>::Zero();
+	Eigen::Matrix<double, state_length, process_noise_dof> cov = Eigen::Matrix<double, state_length, process_noise_dof>::Zero();
 	cov.template block<3, 3>(12, 3) = -s.rot.toRotationMatrix();
 	return cov;
 }
 ```
-Those functions would be called during state predict
+Those functions would be called during ekf state predict
+
 5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 Eigen::Matrix<double, Eigen::Dynamic, 1> h(state &s, bool &valid) //the iteration stops before convergence when valid is false {
 	if (condition){ valid = false; 
 	} // other conditions could be used to stop the ekf update iteration before convergence, otherwise the iteration will not stop until the condition of convergence is satisfied.
-	Eigen::Matrix<double, Eigen::Dynamic, 1> z;
-	z(0) = s.pos[0];
-	return z;
+	Eigen::Matrix<double, Eigen::Dynamic, 1> h_;
+	h_(0) = s.pos[0];
+	return h_;
 }
 Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s) {} 
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s) {}
 ```
-Those functions would be called during state update
+Those functions would be called during ekf state update
+
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
 
 (1) initial state and covariance:
@@ -239,11 +246,12 @@ esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
 ```
 esekfom::esekf<state, process_noise_dof, input> kf;
 ```
-where **process_noise_dof** is the dimension of process noise, with the type of int, and so for **measurement_noise_dof**.
+where **process_noise_dof** is the dimension of process noise, with the type of std int, and so for **measurement_noise_dof**
+
 7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
 ```
 double epsi[state_dof] = {0.001};
-fill(epsi, epsi+23, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
+fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
@@ -267,11 +275,11 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> h_dyn_share(state &s, esekfom::dyn_shar
 	dyn_share_data.R = R; // R is the measurement noise covariance
 	dyn_share_data.z = z; // z is the obtained measurement 
 
-	Eigen::Matrix<double, Eigen::Dynamic, 1> h;
-	h(0) = s.pos[0];
-	return h;
+	Eigen::Matrix<double, Eigen::Dynamic, 1> h_;
+	h_(0) = s.pos[0];
+	return h_;
 }
-This function would be called during ekf update, and the output function and its derivatives, the measurement and the measurement noise would be obtained from this one union function
+This function would be called during ekf state update, and the output function and its derivatives, the measurement and the measurement noise would be obtained from this one union function
 ```
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
 (1) initial state and covariance:
@@ -287,7 +295,7 @@ esekfom::esekf<state, process_noise_dof, input> kf;
 7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
 ```
 double epsi[state_dof] = {0.001};
-fill(epsi, epsi+23, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
+fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_share(f, df_dx, df_dw, h_dyn_share, Maximum_iter, epsi);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
@@ -339,7 +347,7 @@ MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ((vect3, offset_T_L_I)) 
 );
 ```
-4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> that is defined as <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, where w=0 could be left out:
+4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> that is defined as <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"> <see here>, and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, where w=0 could be left out:
 ```
 Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {
 	Eigen::Matrix<double, state_length, 1> res = Eigen::Matrix<double, state_length, 1>::Zero();
@@ -349,23 +357,25 @@ Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {
 	return res;
 }
 Eigen::Matrix<double, state_length, state_dof> df_dx(state &s, const input &i) //notice S2 has length of 3 and dimension of 2 {
-	Eigen::Matrix<double, 24, 23> cov = Eigen::Matrix<double, 24, 23>::Zero();
+	Eigen::Matrix<double, state_length, state_dof> cov = Eigen::Matrix<double, state_length, state_dof>::Zero();
 	cov.template block<3, 3>(0, 12) = Eigen::Matrix3d::Identity();
 	return cov;
 }
 Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, const input &i) {
-	Eigen::Matrix<double, 24, 12> cov = Eigen::Matrix<double, 24, 12>::Zero();
+	Eigen::Matrix<double, state_length, process_noise_dof> cov = Eigen::Matrix<double, state_length, process_noise_dof>::Zero();
 	cov.template block<3, 3>(12, 3) = -s.rot.toRotationMatrix();
 	return cov;
 }
 ```
 Those functions would be called during ekf state predict
+
 5. Implement the differentiation of the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s, bool &valid) {} //the iteration stops before convergence when valid is false
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s, bool &valid) {}
 ```
 Those functions would be called during ekf state update
+
 6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
 
 (1) initial state and covariance:
@@ -378,11 +388,12 @@ esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
 ```
 esekfom::esekf<state, process_noise_dof, input> kf;
 ```
-Where **process_noise_dof** is the dimension of process noise
+Where **process_noise_dof** is the dimension of process noise, of type of std int
+
 7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
 ```
 double epsi[state_dof] = {0.001};
-fill(epsi, epsi+23, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
+fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_runtime(f, df_dx, df_dw, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
 8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
@@ -420,7 +431,7 @@ esekfom::esekf<state, process_noise_dof, input> kf;
 6. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
 ```
 double epsi[state_dof] = {0.001};
-fill(epsi, epsi+23, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
+fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_runtime_share(f, df_dx, df_dw, Maximum_iter, epsi);
 ```
 7. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
@@ -432,13 +443,17 @@ kf.predict(dt, Q, in); // process noise covariance: Q. an Eigen matrix
 measurement h_dyn_runtime_share(state &s, esekfom::dyn_runtime_share_datastruct<double> &dyn_runtime_share_data) 
 {
 	if(dyn_runtime_share_data.converge) {} // this value is true means iteration is converged 
-	dyn_runtime_share_data.valid = false; // the iteration stops before convergence when this value is false
+	if(condition) dyn_runtime_share_data.valid = false; // the iteration stops before convergence when this value is false, if conditions other than convergence is satisfied
 	dyn_runtime_share_data.h_x = H_x; // H_x is the result matrix of the first differentiation 
 	dyn_runtime_share_data.h_v = H_v; // H_v is the result matrix of the second differentiation
 	dyn_runtime_share_data.R = R; // R is the measurement noise covariance
+	
+	measurement h_;
+	h_.pos = s.pos;
+	return h_;
 }
 ```
-This function would be called during ekf update, and the output function and its derivatives, the measurement and the measurement noise would be obtained from this one union function
+This function would be called during ekf state update, and the output function and its derivatives, the measurement and the measurement noise would be obtained from this one union function
 
 then an iterated update is executed:
 ```
