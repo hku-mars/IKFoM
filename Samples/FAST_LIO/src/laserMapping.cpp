@@ -1137,7 +1137,7 @@ int main(int argc, char** argv)
     #else
     double epsi[17] = {0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001};
     #endif
-    kf.init_dyn_share(get_f, df_dx, df_dw, h_share_model, NUM_MAX_ITERATIONS, epsi);
+    kf.init_dyn_share_modified(get_f, df_dx, df_dw, h_share_model, NUM_MAX_ITERATIONS, epsi);
     state_ikfom init_state = kf.get_x();
     #ifdef Online_Calibration
     init_state.offset_T_L_I = Lid_offset_to_IMU;
