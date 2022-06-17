@@ -1720,9 +1720,6 @@ private:
 	state x_;
 	measurement m_;
 	cov P_;
-	spMt l_;
-	spMt f_x_1;
-	spMt f_x_2;
 	cov F_x1 = cov::Identity();
 	cov F_x2 = cov::Identity();
 	cov L_ = cov::Identity();
