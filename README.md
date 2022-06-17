@@ -102,7 +102,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
@@ -149,7 +149,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_share(f, df_dx, df_dw, h_share, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q
 ```
@@ -254,7 +254,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or an measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
@@ -298,7 +298,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_share(f, df_dx, df_dw, h_dyn_share, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
@@ -396,7 +396,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_runtime(f, df_dx, df_dw, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q
 ```
@@ -434,7 +434,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_runtime_share(f, df_dx, df_dw, Maximum_iter, epsi);
 ```
-7. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+7. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q. an Eigen matrix
 ```
