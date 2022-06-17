@@ -77,8 +77,8 @@ measurement h(state &s, bool &valid) // the iteration stops before convergence w
 	h_.position = s.pos;
 	return h_;
 }
-Eigen::Matrix<double, measurement_dof, state_dof> dh_dx(state &s) {} 
-Eigen::Matrix<double, measurement_dof, measurement_noise_dof> dh_dv(state &s) {}
+Eigen::Matrix<double, measurement_dof, state_dof> dh_dx(state &s, bool &valid) {} 
+Eigen::Matrix<double, measurement_dof, measurement_noise_dof> dh_dv(state &s, bool &valid) {}
 ```
 Those functions would be called during the ekf state update
 
@@ -229,8 +229,8 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> h(state &s, bool &valid) //the iteratio
 	h_(0) = s.pos[0];
 	return h_;
 }
-Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s) {} 
-Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s) {}
+Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s, bool &valid) {} 
+Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s, bool &valid) {}
 ```
 Those functions would be called during ekf state update
 
