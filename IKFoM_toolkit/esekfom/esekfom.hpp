@@ -418,7 +418,7 @@ public:
 		state x_propagated = x_;
 		cov P_propagated = P_;
 		
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			vectorized_state dx, dx_new;
 			x_.boxminus(dx, x_propagated);
@@ -579,7 +579,7 @@ public:
 		state x_propagated = x_;
 		cov P_propagated = P_;
 		
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			vectorized_state dx, dx_new;
 			x_.boxminus(dx, x_propagated);
@@ -738,7 +738,7 @@ public:
 		cov P_propagated = P_;
 		int dof_Measurement;
 		int dof_Measurement_noise = R.rows();
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			valid = true;
 			Matrix<scalar_type, Eigen::Dynamic, n> h_x_ = h_x_dyn(x_, valid);
@@ -893,7 +893,7 @@ public:
 		cov P_propagated = P_;
 		int dof_Measurement;
 		int dof_Measurement_noise;
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			dyn_share.valid = true;
 			Matrix<scalar_type, Eigen::Dynamic, 1> h = h_dyn_share (x_,  dyn_share);
@@ -1054,7 +1054,7 @@ public:
 		cov P_propagated = P_;
 		int dof_Measurement;
 		int dof_Measurement_noise;
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			valid = true;
 			Matrix<scalar_type, Eigen::Dynamic, n> h_x_ = h_x_dyn(x_, valid);
@@ -1216,7 +1216,7 @@ public:
 		cov P_propagated = P_;
 		int dof_Measurement;
 		int dof_Measurement_noise;
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			dyn_share.valid = true;
 			measurement_runtime h_ = h(x_,  dyn_share); 
