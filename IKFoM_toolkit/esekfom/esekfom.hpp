@@ -1384,6 +1384,19 @@ public:
 		P_ = input_cov;
 	}
 
+	void reset(state &input_state = state(), cov &input_cov = cov::Identity())
+	{
+		x_ = input_state;
+		P_ = input_cov;
+		if((!x_.vect_state.size())&&(!x_.SO3_state.size())&&(!x_.S2_state.size())&&(!x_.SEN_state.size()))
+		{
+			x_.build_S2_state();
+			x_.build_SO3_state();
+			x_.build_vect_state();
+			x_.build_SEN_state();
+		}
+	}
+
 	const state& get_x() const {
 		return x_;
 	}
