@@ -1,0 +1,95 @@
+%YAML:1.0
+
+# settings
+calibrate_imu: 0  # 0: no imu calibration and use default values. 1: calibrate imu
+show_configuration: 0
+average_nums: 100
+imu_lidar_extrinsic_angle: 0.0
+imu_misalign_angle: 3.0
+line_num: 16 
+scan_num: 1800
+scan_period: 0.1
+edge_threshold: 0.5
+surf_threshold: 0.5
+nearest_feature_search_sq_dist: 25
+verbose: 0
+icp_freq: 1
+max_lidar_nums: 200000
+num_iter: 30
+lidar_scale: 1
+lidar_std: 0.01
+
+# topic names
+imu_topic: "/imu_correct" # "/imu/data" # 
+lidar_topic: "/points_raw" # "/velodyne_points" # 
+lidar_odometry_topic: "/laser_odom_to_init"
+lidar_mapping_topic: "/integrated_to_init"
+
+# noice parameters
+acc_n: 70000
+gyr_n: 0.1
+acc_w: 5000
+gyr_w: 0.05
+
+init_pos_std: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [0.001, 0.001, 0.001]
+   
+init_vel_std: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [0.001, 0.001, 0.001]
+
+init_att_std: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [0.001, 0.001, 0.001]
+   
+init_acc_std: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [0.01, 0.01, 0.02]
+      
+init_gyr_std: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [0.002, 0.002, 0.002]
+  
+# initial IMU biases
+init_ba: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [-0.015774,0.143237,-0.0263845]
+   
+init_bw: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [-0.00275058,-0.000165954,0.00262913]
+   
+# extrinsic parameters
+init_tbl: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [0.0,0.0,0.0]
+   
+init_rbl: !!opencv-matrix
+   rows: 3
+   cols: 3
+   dt: d
+   data:  [1, 0, 0, 
+           0, 1, 0, 
+           0, 0, 1]
+   
+
+
+
+
