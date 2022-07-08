@@ -469,13 +469,13 @@ esekfom::esekf<state, process_noise_dof, input>::cov set_P;
 kf.change_P(set_P);
 ```
 
-## 5. Run the sample
+## 5. Run samples
 Clone the repository:
 
 ```
     git clone https://github.com/hku-mars/IKFoM.git
 ```
-Sample 1. In the **Samples** file folder, there is the scource code that applys the **IKFoM** on the original source code from [FAST LIO](https://github.com/hku-mars/FAST_LIO). Please follow the README.md shown in that repository excepting the step **2. Build**, which is modified as:
+Sample 1. In the **Sample_1** file folder, there is the scource code that applys the **IKFoM** on the original source code from [FAST LIO](https://github.com/hku-mars/FAST_LIO). Please follow the README.md shown in that repository excepting the step **2. Build**, which is modified as:
 ```
 cd ~/catkin_ws/src
 cp -r ~/IKFoM/Samples/FAST_LIO FAST_LIO
@@ -498,7 +498,7 @@ roslaunch fast_lio mapping_avia_outdoor.launch
 rosbag play YOUR_DOWNLOADED.bag
 ```
 
-Sample 2. In the **Samples** file folder, there is the scource code that applys the **IKFoM** on the original source code from [LINS](https://github.com/ChaoqinRobotics/LINS---LiDAR-inertial-SLAM). Please follow the README.md shown in that repository excepting the step **Compile**, which is modified as:
+Sample 2. In the **Sample_2** file folder, there is the scource code that applys the **IKFoM** on the original source code from [LINS](https://github.com/ChaoqinRobotics/LINS---LiDAR-inertial-SLAM). Please follow the README.md shown in that repository excepting the step **Compile**, which is modified as:
 ```
 cd ~/catkin_ws/src
 cp -r ~/IKFoM/Samples/LINS---LiDAR-inertial-SLAM LINS---LiDAR-inertial-SLAM
