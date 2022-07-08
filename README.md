@@ -512,7 +512,7 @@ source devel/setup.bash
 Run
 ```
 roslaunch lins run_port_exp.launch
-rosbag play YOUR_DOWNLOADED.bag
+rosbag play YOUR_DOWNLOADED.bag --clock
 ```
 
 ## 6.Acknowledgments
