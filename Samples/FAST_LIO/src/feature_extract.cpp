@@ -180,6 +180,13 @@ void horizon_handler(const livox_ros_driver::CustomMsg::ConstPtr &msg)
     pl_buff[i].reserve(plsize);
   }
   
+  pl_full[0].x = msg->points[0].x;
+  pl_full[0].y = msg->points[0].y;
+  pl_full[0].z = msg->points[0].z;
+  pl_full[0].intensity = msg->points[0].reflectivity;
+  pl_full[0].curvature = msg->points[0].offset_time / float(1000000);
+  pl_buff[msg->points[0].line].push_back(pl_full[0]);
+
   for(uint i=1; i<plsize; i++)
   {
     if((msg->points[i].line < N_SCANS) && ((msg->points[i].tag & 0x30) == 0x10)
@@ -208,21 +215,24 @@ void horizon_handler(const livox_ros_driver::CustomMsg::ConstPtr &msg)
     vector<orgtype> &types = typess[j];
     plsize = pl.size();
     types.resize(plsize);
-    plsize--;
-    for(uint i=0; i<plsize; i++)
+    if (plsize > 0)
     {
+      plsize--;
+      for(uint i=0; i<plsize; i++)
+      {
 
-      types[i].range = sqrt(pl[i].x*pl[i].x + pl[i].y*pl[i].y);
-      vx = pl[i].x - pl[i+1].x;
-      vy = pl[i].y - pl[i+1].y;
-      vz = pl[i].z - pl[i+1].z;
-      types[i].dista = vx*vx + vy*vy + vz*vz;
-      // std::cout<<vx<<" "<<vx<<" "<<vz<<" "<<std::endl;
+        types[i].range = sqrt(pl[i].x*pl[i].x + pl[i].y*pl[i].y);
+        vx = pl[i].x - pl[i+1].x;
+        vy = pl[i].y - pl[i+1].y;
+        vz = pl[i].z - pl[i+1].z;
+        types[i].dista = vx*vx + vy*vy + vz*vz;
+        // std::cout<<vx<<" "<<vx<<" "<<vz<<" "<<std::endl;
+      }
+      // plsize++;
+      types[plsize].range = sqrt(pl[plsize].x*pl[plsize].x + pl[plsize].y*pl[plsize].y);
+
+      give_feature(pl, types, pl_corn, pl_surf);
     }
-    // plsize++;
-    types[plsize].range = sqrt(pl[plsize].x*pl[plsize].x + pl[plsize].y*pl[plsize].y);
-
-    give_feature(pl, types, pl_corn, pl_surf);
   }
 
   ros::Time ct;
@@ -541,7 +551,10 @@ void give_feature(pcl::PointCloud<PointType> &pl, vector<orgtype> &types, pcl::P
         }
         else
         {
-          types[j].ftype = Poss_Plane;
+          if (j < types.size())
+          {
+            types[j].ftype = Poss_Plane;
+          }
         }
       }
       

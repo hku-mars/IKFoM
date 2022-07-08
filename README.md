@@ -475,14 +475,39 @@ Clone the repository:
 ```
     git clone https://github.com/hku-mars/IKFoM.git
 ```
-In the **Samples** file folder, there is the scource code that applys the **IKFoM** on the original source code from [FAST LIO](https://github.com/hku-mars/FAST_LIO). Please follow the README.md shown in that repository excepting the step **2. Build**, which is modified as:
+Sample 1. In the **Samples** file folder, there is the scource code that applys the **IKFoM** on the original source code from [FAST LIO](https://github.com/hku-mars/FAST_LIO). Please follow the README.md shown in that repository excepting the step **2. Build**, which is modified as:
 ```
 cd ~/catkin_ws/src
-cp -r ~/IKFoM/Samples/FAST_LIO-stable FAST_LIO-stable
+cp -r ~/IKFoM/Samples/FAST_LIO FAST_LIO
 cd ..
 catkin_make
 source devel/setup.bash
 ```
+
+Livox Avia rosbag: Can be downloaded from [here](https://connecthkuhk-my.sharepoint.com/:f:/g/personal/hdj65822_connect_hku_hk/Eu1wAc34q1ZDvHCwe2ajAK4BsH82-c3yTldI9Blp6_rivg?e=41sEEw)
+
+For the indoor bag, run:
+'''
+roslaunch fast_lio mapping_avia.launch
+rosbag play YOUR_DOWNLOADED.bag
+'''
+
+For the outdoor bag, run:
+'''
+roslaunch fast_lio mapping_avia_outdoor.launch
+rosbag play YOUR_DOWNLOADED.bag
+'''
+
+Sample 2. In the **Samples** file folder, there is the scource code that applys the **IKFoM** on the original source code from [LINS](https://github.com/ChaoqinRobotics/LINS---LiDAR-inertial-SLAM). Please follow the README.md shown in that repository excepting the step **Compile**, which is modified as:
+```
+cd ~/catkin_ws/src
+cp -r ~/IKFoM/Samples/LINS---LiDAR-inertial-SLAM LINS---LiDAR-inertial-SLAM
+cd ..
+catkin_make -j1
+source devel/setup.bash
+```
+
+**LIO-SAM Dataset:** Can be found [here](https://github.com/TixiaoShan/LIO-SAM), in which, Campus_dataset(large) and Campus_dataset(small) are tested in our paper.
 
 ## 6.Acknowledgments
 Thanks for C. Hertzberg,  R.  Wagner,  U.  Frese,  and  L.  Schroder.  Integratinggeneric   sensor   fusion   algorithms   with   sound   state   representationsthrough  encapsulation  of  manifolds.
