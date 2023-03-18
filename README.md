@@ -77,8 +77,8 @@ measurement h(state &s, bool &valid) // the iteration stops before convergence w
 	h_.position = s.pos;
 	return h_;
 }
-Eigen::Matrix<double, measurement_dof, state_dof> dh_dx(state &s) {} 
-Eigen::Matrix<double, measurement_dof, measurement_noise_dof> dh_dv(state &s) {}
+Eigen::Matrix<double, measurement_dof, state_dof> dh_dx(state &s, bool &valid) {} 
+Eigen::Matrix<double, measurement_dof, measurement_noise_dof> dh_dv(state &s, bool &valid) {}
 ```
 Those functions would be called during the ekf state update
 
@@ -102,7 +102,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
@@ -149,7 +149,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_share(f, df_dx, df_dw, h_share, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q
 ```
@@ -229,8 +229,8 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> h(state &s, bool &valid) //the iteratio
 	h_(0) = s.pos[0];
 	return h_;
 }
-Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s) {} 
-Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s) {}
+Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s, bool &valid) {} 
+Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s, bool &valid) {}
 ```
 Those functions would be called during ekf state update
 
@@ -254,7 +254,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or an measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
@@ -298,7 +298,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_share(f, df_dx, df_dw, h_dyn_share, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
@@ -396,7 +396,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_runtime(f, df_dx, df_dw, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q
 ```
@@ -434,7 +434,7 @@ double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_runtime_share(f, df_dx, df_dw, Maximum_iter, epsi);
 ```
-7. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+7. In the running time, once an input **in** or a measurement **z** is received **dt** after the last propagation or update, a propagation is executed:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q. an Eigen matrix
 ```
@@ -469,19 +469,50 @@ esekfom::esekf<state, process_noise_dof, input>::cov set_P;
 kf.change_P(set_P);
 ```
 
-## 5. Run the sample
+## 5. Run samples
 Clone the repository:
 
 ```
     git clone https://github.com/hku-mars/IKFoM.git
 ```
-In the **Samples** file folder, there is the scource code that applys the **IKFoM** on the original source code from [FAST LIO](https://github.com/hku-mars/FAST_LIO). Please follow the README.md shown in that repository excepting the step **2. Build**, which is modified as:
+Sample 1. In the **Sample_1** file folder, there is the scource code that applys the **IKFoM** on the original source code from [FAST LIO](https://github.com/hku-mars/FAST_LIO). Please follow the README.md shown in that repository excepting the step **2. Build**, which is modified as:
 ```
 cd ~/catkin_ws/src
-cp -r ~/IKFoM/Samples/FAST_LIO-stable FAST_LIO-stable
+cp -r ~/IKFoM/Samples/FAST_LIO FAST_LIO
 cd ..
 catkin_make
 source devel/setup.bash
+```
+
+Livox Avia rosbag: Can be downloaded from [here](https://connecthkuhk-my.sharepoint.com/:f:/g/personal/hdj65822_connect_hku_hk/Eu1wAc34q1ZDvHCwe2ajAK4BsH82-c3yTldI9Blp6_rivg?e=41sEEw)
+
+For the indoor bag, run:
+```
+roslaunch fast_lio mapping_avia.launch
+rosbag play YOUR_DOWNLOADED.bag
+```
+
+For the outdoor bag, run:
+```
+roslaunch fast_lio mapping_avia_outdoor.launch
+rosbag play YOUR_DOWNLOADED.bag
+```
+
+Sample 2. In the **Sample_2** file folder, there is the scource code that applys the **IKFoM** on the original source code from [LINS](https://github.com/ChaoqinRobotics/LINS---LiDAR-inertial-SLAM). Please follow the README.md shown in that repository excepting the step **Compile**, which is modified as:
+```
+cd ~/catkin_ws/src
+cp -r ~/IKFoM/Samples/LINS---LiDAR-inertial-SLAM LINS---LiDAR-inertial-SLAM
+cd ..
+catkin_make -j1
+source devel/setup.bash
+```
+
+**LIO-SAM Dataset:** Can be found [here](https://github.com/TixiaoShan/LIO-SAM), in which, Campus_dataset(large) and Campus_dataset(small) are tested in our paper.
+
+Run
+```
+roslaunch lins run_port_exp.launch
+rosbag play YOUR_DOWNLOADED.bag --clock
 ```
 
 ## 6.Acknowledgments

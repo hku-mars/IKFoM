@@ -43,7 +43,6 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
 
 #include "../mtk/types/vect.hpp"
 #include "../mtk/types/SOn.hpp"
@@ -64,7 +63,7 @@ using namespace Eigen;
 template<typename S, typename M, int measurement_noise_dof = M::DOF>
 struct share_datastruct
 {
-	bool valid;
+	bool valid = true;
 	bool converge;
 	M z;
 	Eigen::Matrix<typename S::scalar, M::DOF, measurement_noise_dof> h_v;
@@ -78,7 +77,7 @@ struct share_datastruct
 template<typename T>
 struct dyn_share_datastruct
 {
-	bool valid;
+	bool valid = true;
 	bool converge;
 	Eigen::Matrix<T, Eigen::Dynamic, 1> h;
 	Eigen::Matrix<T, Eigen::Dynamic, 1> z;
@@ -93,7 +92,7 @@ struct dyn_share_datastruct
 template<typename T>
 struct dyn_runtime_share_datastruct
 {
-	bool valid;
+	bool valid = true;
 	bool converge;
 	//Z z;
 	Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic> h_v;
@@ -114,7 +113,6 @@ public:
 	typedef typename state::scalar scalar_type;
 	typedef Matrix<scalar_type, n, n> cov;
 	typedef Matrix<scalar_type, m, n> cov_;
-	typedef SparseMatrix<scalar_type> spMt;
 	typedef Matrix<scalar_type, n, 1> vectorized_state;
 	typedef Matrix<scalar_type, m, 1> flatted_state;
 	typedef flatted_state processModel(state &, const input &);
@@ -126,10 +124,10 @@ public:
 	typedef measurement measurementModel_share(state &, share_datastruct<state, measurement, measurement_noise_dof> &);
 	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn(state &, bool &);
 	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, 1> measurementModel_dyn_share(state &,  dyn_share_datastruct<scalar_type> &);
-	typedef Eigen::Matrix<scalar_type ,l, n> measurementMatrix1(state &);
-	typedef Eigen::Matrix<scalar_type , Eigen::Dynamic, n> measurementMatrix1_dyn(state &);
-	typedef Eigen::Matrix<scalar_type ,l, measurement_noise_dof> measurementMatrix2(state &);
-	typedef Eigen::Matrix<scalar_type ,Eigen::Dynamic, Eigen::Dynamic> measurementMatrix2_dyn(state &);
+	typedef Eigen::Matrix<scalar_type ,l, n> measurementMatrix1(state &, bool &);
+	typedef Eigen::Matrix<scalar_type , Eigen::Dynamic, n> measurementMatrix1_dyn(state &, bool &);
+	typedef Eigen::Matrix<scalar_type ,l, measurement_noise_dof> measurementMatrix2(state &, bool &);
+	typedef Eigen::Matrix<scalar_type ,Eigen::Dynamic, Eigen::Dynamic> measurementMatrix2_dyn(state &, bool &);
 	typedef Eigen::Matrix<scalar_type, measurement_noise_dof, measurement_noise_dof> measurementnoisecovariance;
 	typedef Eigen::Matrix<scalar_type, Eigen::Dynamic, Eigen::Dynamic> measurementnoisecovariance_dyn;
 
@@ -417,7 +415,7 @@ public:
 		state x_propagated = x_;
 		cov P_propagated = P_;
 		
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			vectorized_state dx, dx_new;
 			x_.boxminus(dx, x_propagated);
@@ -462,7 +460,7 @@ public:
 					seg_sen(i) = dx(idx+i);
 				}
 
-				x_.Lie_Jacob_Right(seg_sen, jacr);
+				x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 				jac_sen = jacr * seg_sen;
 				for(int i=0; i<dof; i++)
 				{
@@ -719,7 +717,7 @@ public:
 		state x_propagated = x_;
 		cov P_propagated = P_;
 		
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			vectorized_state dx, dx_new;
 			x_.boxminus(dx, x_propagated);
@@ -748,7 +746,7 @@ public:
 					seg_sen(i) = dx(idx+i);
 				}
 
-				x_.Lie_Jacob_Right(seg_sen, jacr);
+				x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 				jac_sen = jacr * seg_sen;
 				for(int i=0; i<dof; i++)
 				{
@@ -1018,7 +1016,7 @@ public:
 		cov P_propagated = P_;
 		int dof_Measurement;
 		int dof_Measurement_noise = R.rows();
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			valid = true;
 			Matrix<scalar_type, Eigen::Dynamic, n> h_x_ = h_x_dyn(x_, valid);
@@ -1047,7 +1045,7 @@ public:
 					seg_sen(i) = dx(idx+i);
 				}
 
-				x_.Lie_Jacob_Right(seg_sen, jacr);
+				x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 				jac_sen = jacr * seg_sen;
 				for(int i=0; i<dof; i++)
 				{
@@ -1314,7 +1312,7 @@ public:
 		cov P_propagated = P_;
 		int dof_Measurement;
 		int dof_Measurement_noise;
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			dyn_share.valid = true;
 			Matrix<scalar_type, Eigen::Dynamic, 1> h = h_dyn_share (x_,  dyn_share);
@@ -1346,7 +1344,7 @@ public:
 					seg_sen(i) = dx(idx+i);
 				}
 
-				x_.Lie_Jacob_Right(seg_sen, jacr);
+				x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 				jac_sen = jacr * seg_sen;
 				for(int i=0; i<dof; i++)
 				{
@@ -1615,7 +1613,7 @@ public:
 		cov P_propagated = P_;
 		int dof_Measurement;
 		int dof_Measurement_noise;
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			valid = true;
 			Matrix<scalar_type, Eigen::Dynamic, n> h_x_ = h_x_dyn(x_, valid);
@@ -1645,7 +1643,7 @@ public:
 					seg_sen(i) = dx(idx+i);
 				}
 
-				x_.Lie_Jacob_Right(seg_sen, jacr);
+				x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 				jac_sen = jacr * seg_sen;
 				for(int i=0; i<dof; i++)
 				{
@@ -1917,7 +1915,7 @@ public:
 		cov P_propagated = P_;
 		int dof_Measurement;
 		int dof_Measurement_noise;
-		for(int i=-1; i<maximum_iter; i++)
+		for(int i=0; i<maximum_iter; i++)
 		{
 			dyn_share.valid = true;
 			measurement_runtime h_ = h(x_,  dyn_share); 
@@ -1949,7 +1947,7 @@ public:
 					seg_sen(i) = dx(idx+i);
 				}
 
-				x_.Lie_Jacob_Right(seg_sen, jacr);
+				x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 				jac_sen = jacr * seg_sen;
 				for(int i=0; i<dof; i++)
 				{
@@ -2226,6 +2224,19 @@ public:
 		P_ = input_cov;
 	}
 
+	void reset(state &input_state = state(), cov &input_cov = cov::Identity())
+	{
+		x_ = input_state;
+		P_ = input_cov;
+		if((!x_.vect_state.size())&&(!x_.SO3_state.size())&&(!x_.S2_state.size())&&(!x_.SEN_state.size()))
+		{
+			x_.build_S2_state();
+			x_.build_SO3_state();
+			x_.build_vect_state();
+			x_.build_SEN_state();
+		}
+	}
+
 	const state& get_x() const {
 		return x_;
 	}
@@ -2236,9 +2247,6 @@ private:
 	state x_;
 	measurement m_;
 	cov P_;
-	spMt l_;
-	spMt f_x_1;
-	spMt f_x_2;
 	cov F_x1 = cov::Identity();
 	cov F_x2 = cov::Identity();
 	cov L_ = cov::Identity();
