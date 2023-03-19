@@ -299,13 +299,11 @@ public:
 			}
 		}
 
-		MatrixXd res_temp_SEN;
-		VectorXd seg_SEN;
 		for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 			int idx = (*it).first.first;
 			int dim = (*it).first.second;
 			int dof = (*it).second;
-			VectorXd seg_sen, minus_sen, sen_p, jac_p;
+			VectorXd seg_sen(dof), minus_sen(dof), sen_p(dof), jac_p;
 			MatrixXd jacr, jacl_inv, res_temp_sen;
 			for(int i = 0; i < dof; i++){
 				seg_sen(i) = f_(dim + i) * dt;
@@ -450,8 +448,6 @@ public:
 				}
 			}
 			
-			MatrixXd res_temp_SEN;
-			VectorXd seg_SEN;
 			for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 				int idx = (*it).first.first;
 				int dim = (*it).first.second;
@@ -555,7 +551,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -738,8 +734,6 @@ public:
 
 			P_ = P_propagated;
 			
-			MatrixXd res_temp_SEN;
-			VectorXd seg_SEN;
 			for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 				int idx = (*it).first.first;
 				int dim = (*it).first.second;
@@ -863,7 +857,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -1040,8 +1034,6 @@ public:
 
 			P_ = P_propagated;
 
-			MatrixXd res_temp_SEN;
-			VectorXd seg_SEN;
 			for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 				int idx = (*it).first.first;
 				int dim = (*it).first.second;
@@ -1160,7 +1152,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -1341,8 +1333,6 @@ public:
 
 			P_ = P_propagated;
 
-			MatrixXd res_temp_SEN;
-			VectorXd seg_SEN;
 			for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 				int idx = (*it).first.first;
 				int dim = (*it).first.second;
@@ -1462,7 +1452,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -1642,8 +1632,6 @@ public:
 
 			P_ = P_propagated;
 
-			MatrixXd res_temp_SEN;
-			VectorXd seg_SEN;
 			for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 				int idx = (*it).first.first;
 				int dim = (*it).first.second;
@@ -1764,7 +1752,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -1948,8 +1936,6 @@ public:
 
 			P_ = P_propagated;
 
-			MatrixXd res_temp_SEN;
-			VectorXd seg_SEN;
 			for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 				int idx = (*it).first.first;
 				int dim = (*it).first.second;
@@ -2070,7 +2056,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -2248,8 +2234,6 @@ public:
 			
 			P_ = P_propagated;
 			
-			MatrixXd res_temp_SEN;
-			VectorXd seg_SEN;
 			for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 				int idx = (*it).first.first;
 				int dim = (*it).first.second;
@@ -2369,7 +2353,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -2550,8 +2534,6 @@ public:
 			
 			P_ = P_propagated;
 			
-			MatrixXd res_temp_SEN;
-			VectorXd seg_SEN;
 			for (std::vector<std::pair<std::pair<int, int>, int> >::iterator it = x_.SEN_state.begin(); it != x_.SEN_state.end(); it++) {
 				int idx = (*it).first.first;
 				int dim = (*it).first.second;
@@ -2686,7 +2668,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
