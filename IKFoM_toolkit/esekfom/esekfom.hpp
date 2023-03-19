@@ -303,7 +303,7 @@ public:
 			int idx = (*it).first.first;
 			int dim = (*it).first.second;
 			int dof = (*it).second;
-			VectorXd seg_sen, minus_sen, sen_p, jac_p;
+			VectorXd seg_sen(dof), minus_sen(dof), sen_p(dof), jac_p;
 			MatrixXd jacr, jacl_inv, res_temp_sen;
 			for(int i = 0; i < dof; i++){
 				seg_sen(i) = f_(dim + i) * dt;
@@ -553,7 +553,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -859,7 +859,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -1153,7 +1153,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -1453,7 +1453,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -1753,7 +1753,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
@@ -2058,7 +2058,7 @@ public:
 					int idx = (*it).first.first;
 					int dim = (*it).first.second;
 					int dof = (*it).second;
-					VectorXd seg_sen, sen_p, jac_p;
+					VectorXd seg_sen(dof), sen_p(dof), jac_p;
 					MatrixXd jacr;
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
