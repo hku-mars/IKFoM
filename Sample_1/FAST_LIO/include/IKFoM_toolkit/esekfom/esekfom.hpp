@@ -1173,7 +1173,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							for(int j=0; j<dof; j++)
 							{
 								sen_p(j) = K_(idx+j,i);
@@ -1238,7 +1238,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
 						}
 					}
@@ -1274,7 +1274,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
 						}
 					}
@@ -1473,7 +1473,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							for(int j=0; j<dof; j++)
 							{
 								sen_p(j) = K_(idx+j,i);
@@ -1538,7 +1538,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
 						}
 					}
@@ -1574,7 +1574,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
 						}
 					}
@@ -1773,7 +1773,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							for(int j=0; j<dof; j++)
 							{
 								sen_p(j) = K_(idx+j,i);
@@ -1838,7 +1838,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
 						}
 					}
@@ -1874,7 +1874,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
 						}
 					}
@@ -2077,7 +2077,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							for(int j=0; j<dof; j++)
 							{
 								sen_p(j) = K_(idx+j,i);
@@ -2142,7 +2142,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
 						}
 					}
@@ -2178,7 +2178,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
 						}
 					}
@@ -2374,7 +2374,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							for(int j=0; j<dof; j++)
 							{
 								sen_p(j) = K_(idx+j,i);
@@ -2439,7 +2439,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
 						}
 					}
@@ -2475,7 +2475,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
 						}
 					}
@@ -2689,7 +2689,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							for(int j=0; j<dof; j++)
 							{
 								sen_p(j) = K_(idx+j,i);
@@ -2754,7 +2754,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<3, 1>(idx, i) = res_temp_SO3 * (K_. template block<3, 1>(idx, i));
 						}
 					}
@@ -2790,7 +2790,7 @@ public:
 					}
 					if(n > l)
 					{
-						for(int i = 0; i < l; i++){
+						for(int i = 0; i < dof_Measurement; i++){
 							K_. template block<2, 1>(idx, i) = res_temp_S2 * (K_. template block<2, 1>(idx, i));
 						}
 					}
