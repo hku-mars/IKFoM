@@ -556,7 +556,7 @@ public:
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
 					}
-					x_.Lie_Jacob_Right(seg_sen, jacr);
+					x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 
 					for(int i = 0; i < n; i++){
 						for(int j=0; j<dof; j++)
@@ -862,7 +862,7 @@ public:
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
 					}
-					x_.Lie_Jacob_Right(seg_sen, jacr);
+					x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 
 					for(int i = 0; i < n; i++){
 						for(int j=0; j<dof; j++)
@@ -1156,7 +1156,7 @@ public:
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
 					}
-					x_.Lie_Jacob_Right(seg_sen, jacr);
+					x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 
 					for(int i = 0; i < n; i++){
 						for(int j=0; j<dof; j++)
@@ -1456,7 +1456,7 @@ public:
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
 					}
-					x_.Lie_Jacob_Right(seg_sen, jacr);
+					x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 
 					for(int i = 0; i < n; i++){
 						for(int j=0; j<dof; j++)
@@ -1756,7 +1756,7 @@ public:
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
 					}
-					x_.Lie_Jacob_Right(seg_sen, jacr);
+					x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 
 					for(int i = 0; i < n; i++){
 						for(int j=0; j<dof; j++)
@@ -2061,7 +2061,7 @@ public:
 					for(int i = 0; i < dof; i++){
 						seg_sen(i) = dx_(idx+i);
 					}
-					x_.Lie_Jacob_Right(seg_sen, jacr);
+					x_.Lie_Jacob_Right(seg_sen, jacr, idx);
 
 					for(int i = 0; i < n; i++){
 						for(int j=0; j<dof; j++)
